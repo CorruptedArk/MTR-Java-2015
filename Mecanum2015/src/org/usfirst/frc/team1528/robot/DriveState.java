@@ -42,7 +42,7 @@ public class DriveState implements Runnable {
      * A constructor using an ExecutiveOrder.
      * @param defaultState What state will the robot start out with?
      * @param control the ExecutiveOrder controlling the switching
-     * @param buttonID The ID of the button
+     * @param buttonID the ID of the button
      */
     public DriveState(boolean defaultState,ExecutiveOrder control,int buttonID){
         this.orientation = defaultState;
