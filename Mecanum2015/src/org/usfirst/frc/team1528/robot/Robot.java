@@ -166,12 +166,15 @@ public class Robot extends SampleRobot {
     	orientationSwitcher = new DriveState(true,moveStick,A_BUTTON);
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
+        
+        double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
+        
         while (isOperatorControl() && isEnabled()) {
             myDrive.setSafetyEnabled(true);
             boolean inverted = orientationSwitcher.getOrientation();
-            double xMovement = buffer(LEFT_X_AXIS,moveStick,inverted,0.18,-0.18);
-            double yMovement = buffer(LEFT_Y_AXIS,moveStick,inverted,0.18,-0.18);
-            double twist = buffer(RIGHT_X_AXIS,moveStick,true,0.18,-0.18);
+            double xMovement = buffer(LEFT_X_AXIS,moveStick,inverted,0.18,-0.18,scale);
+            double yMovement = buffer(LEFT_Y_AXIS,moveStick,inverted,0.18,-0.18,scale);
+            double twist = buffer(RIGHT_X_AXIS,moveStick,true,0.18,-0.18,scale);
             myDrive.mecanumDrive_Cartesian(xMovement, yMovement, twist, 0.0);
             
             
@@ -192,15 +195,17 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
+        double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
+        
         while (isOperatorControl() && isEnabled()) {
             myDrive.setSafetyEnabled(true);
             if(control.president.getRawButton(B_BUTTON)){
                control.trap();
             }
             boolean inverted = orientationSwitcher.getOrientation();
-            double xMovement = buffer(LEFT_X_AXIS,moveStick,inverted,0.18,-0.18);
-            double yMovement = buffer(LEFT_Y_AXIS,moveStick,inverted,0.18,-0.18);
-            double twist = buffer(RIGHT_X_AXIS,moveStick,true,0.18,-0.18);
+            double xMovement = buffer(LEFT_X_AXIS,moveStick,inverted,0.18,-0.18,scale);
+            double yMovement = buffer(LEFT_Y_AXIS,moveStick,inverted,0.18,-0.18,scale);
+            double twist = buffer(RIGHT_X_AXIS,moveStick,true,0.18,-0.18,scale);
             myDrive.mecanumDrive_Cartesian(xMovement, yMovement, twist, 0.0);
             
             
