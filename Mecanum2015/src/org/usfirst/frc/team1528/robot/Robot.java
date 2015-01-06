@@ -89,27 +89,34 @@ public class Robot extends SampleRobot {
      */
     public void autonomous() {
     	autonomousID = (Integer)autoChooser.getSelected();
-        
+    	
+    	double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
+    	
+    	if(scale <= 1){
+            scale = 1;
+        }
+    	
         switch(autonomousID.intValue()) {
             case 1:
-                autonomous1();
+                autonomous1(scale);
                 break;
             case 2:
-                autonomous2();
+                autonomous2(scale);
                 break;
             case 3:
-                autonomous3();
+                autonomous3(scale);
                 break;
         }
     }
     
     /**
      * Forward driving.
+     * @param scale The amount to divide the speed by.
      */
-    public void autonomous1(){
+    public void autonomous1(double scale){
         myDrive.setSafetyEnabled(false);
-       
-        myDrive.mecanumDrive_Cartesian(0.0,1.0,0.0,0.0);
+        
+        myDrive.mecanumDrive_Cartesian(0.0,1.0/scale,0.0,0.0);
         Timer.delay(1.5);
         myDrive.mecanumDrive_Cartesian(0.0,0.0,0.0,0.0);
         
@@ -117,11 +124,12 @@ public class Robot extends SampleRobot {
     
     /**
      * Sideways driving.
+     * @param scale The amount to divide the speed by.
      */
-    public void autonomous2(){
+    public void autonomous2(double scale){
         myDrive.setSafetyEnabled(false);
        
-        myDrive.mecanumDrive_Cartesian(1.0,0.0,0.0,0.0);
+        myDrive.mecanumDrive_Cartesian(1.0/scale,0.0,0.0,0.0);
         Timer.delay(1.5);
         myDrive.mecanumDrive_Cartesian(0.0,0.0,0.0,0.0);
         
@@ -129,11 +137,12 @@ public class Robot extends SampleRobot {
     
     /**
      * Rotation in place.
+     * @param scale The amount to divide the speed by.
      */
-    public void autonomous3(){
+    public void autonomous3(double scale){
         myDrive.setSafetyEnabled(false);
        
-        myDrive.mecanumDrive_Cartesian(0.0,0.0,1.0,0.0);
+        myDrive.mecanumDrive_Cartesian(0.0,0.0,1.0/scale,0.0);
         Timer.delay(1.5);
         myDrive.mecanumDrive_Cartesian(0.0,0.0,0.0,0.0);
         
