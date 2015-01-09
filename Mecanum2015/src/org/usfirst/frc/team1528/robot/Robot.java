@@ -1,8 +1,8 @@
 
 package org.usfirst.frc.team1528.robot;
 
-
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
 /**
@@ -57,6 +57,8 @@ public class Robot extends SampleRobot {
     SendableChooser teleChooser;
     Integer teleID;
     
+    NetworkTable table;
+   
 
     public Robot() {
         myDrive = new RobotDrive(0,1,2,3);
@@ -66,6 +68,8 @@ public class Robot extends SampleRobot {
         control = new ExecutiveOrder(moveStick,shootStick,Y_BUTTON);
         release = new ExecutiveRelease(control);
         
+        table = NetworkTable.getTable("oculus");
+       
         autoChooser = new SendableChooser();
         autoChooser.addDefault("Auto Forward", new Integer(1));
         autoChooser.addObject("Auto Sideways", new Integer(2));
@@ -482,4 +486,8 @@ public class Robot extends SampleRobot {
         }
     }
    
+    public void cameraControl(Servo xServo, Servo yServo, NetworkTable table){
+    	xServo.set(table.getNumber("xServo", 0.5));
+    	yServo.set(table.getNumber("yServo", 0.5));
+    }
 }
