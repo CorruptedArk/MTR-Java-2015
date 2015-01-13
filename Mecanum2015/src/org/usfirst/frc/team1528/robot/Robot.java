@@ -57,6 +57,8 @@ public class Robot extends SampleRobot {
     SendableChooser teleChooser;
     Integer teleID;
     
+    Servo xServo, yServo;
+    
     NetworkTable table;
    
 
@@ -68,8 +70,11 @@ public class Robot extends SampleRobot {
         control = new ExecutiveOrder(moveStick,shootStick,Y_BUTTON);
         release = new ExecutiveRelease(control);
         
-        table = NetworkTable.getTable("oculus");
-       
+        yServo = new Servo(4);
+        xServo = new Servo(5);  
+        
+		table = NetworkTable.getTable("oculus");
+        
         autoChooser = new SendableChooser();
         autoChooser.addDefault("Auto Forward", new Integer(1));
         autoChooser.addObject("Auto Sideways", new Integer(2));
@@ -184,6 +189,8 @@ public class Robot extends SampleRobot {
         
         while (isOperatorControl() && isEnabled()) {
             myDrive.setSafetyEnabled(true);
+            cameraControl(xServo, yServo, table);
+            
             boolean inverted = orientationSwitcher.getOrientation();
             double xMovement = buffer(LEFT_X_AXIS,moveStick,inverted,0.18,-0.18,scale);
             double yMovement = buffer(LEFT_Y_AXIS,moveStick,inverted,0.18,-0.18,scale);
@@ -488,6 +495,6 @@ public class Robot extends SampleRobot {
    
     public void cameraControl(Servo xServo, Servo yServo, NetworkTable table){
     	xServo.set(table.getNumber("xServo", 0.5));
-    	yServo.set(table.getNumber("yServo", 0.5));
+    	yServo.set(-table.getNumber("yServo", 0.5)+1);
     }
 }

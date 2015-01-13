@@ -32,27 +32,39 @@ public class OculusData {
 	}
 	
 	public double getXServoAngularPosition(){
-		return pose.Orientation.x/Math.PI;
+		TrackingState trackingState = hmd.getSensorState(ovrLib.ovr_GetTimeInSeconds());
+		pose = trackingState.HeadPose.Pose;
+		return (pose.Orientation.x/Math.PI)+1;
 	}
 	
 	public double getYServoAngularPosition(){
-		return pose.Orientation.y/Math.PI;
+		TrackingState trackingState = hmd.getSensorState(ovrLib.ovr_GetTimeInSeconds());
+		pose = trackingState.HeadPose.Pose;
+		return (pose.Orientation.y/Math.PI)+1;
 	}
 	
 	public double getZServoAngularPosition(){
-		return pose.Orientation.z/Math.PI;
+		TrackingState trackingState = hmd.getSensorState(ovrLib.ovr_GetTimeInSeconds());
+		pose = trackingState.HeadPose.Pose;
+		return (pose.Orientation.z/Math.PI);
 	}
 	
 	public double getXDegreeAngularPosition(){
-		return pose.Orientation.x*(180/Math.PI);
+		TrackingState trackingState = hmd.getSensorState(ovrLib.ovr_GetTimeInSeconds());
+		pose = trackingState.HeadPose.Pose;
+		return (pose.Orientation.x*(180/Math.PI))+180;
 	}
 	
 	public double getYDegreeAngularPosition(){
-		return pose.Orientation.y*(180/Math.PI);
+		TrackingState trackingState = hmd.getSensorState(ovrLib.ovr_GetTimeInSeconds());
+		pose = trackingState.HeadPose.Pose;
+		return (pose.Orientation.y*(180/Math.PI))+180;
 	}
 	
 	public double getZDegreeAngularPosition(){
-		return pose.Orientation.z*(180/Math.PI);
+		TrackingState trackingState = hmd.getSensorState(ovrLib.ovr_GetTimeInSeconds());
+		pose = trackingState.HeadPose.Pose;
+		return (pose.Orientation.z*(180/Math.PI))+180;
 	}
 	
 	
