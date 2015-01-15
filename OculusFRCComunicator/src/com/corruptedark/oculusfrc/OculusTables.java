@@ -1,7 +1,6 @@
 package com.corruptedark.oculusfrc;
 
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.smartdashboard.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

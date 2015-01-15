@@ -2,10 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/MTR-1528/Documents/MTR-Java-2015/build libraries/guava-r09.jar"/>
-	<classpathentry kind="lib" path="C:/Users/MTR-1528/Documents/MTR-Java-2015/build libraries/jna-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/MTR-1528/Documents/MTR-Java-2015/build libraries/jsr305-1.3.2.jar"/>
 	<classpathentry kind="var" path="networktables" sourcepath="/networktables.sources"/>
 	<classpathentry kind="var" path="wpilib" sourcepath="wpilib.sources"/>
+	<classpathentry kind="var" path="guava"/>
+	<classpathentry kind="var" path="jna"/>
+	<classpathentry kind="var" path="jsr"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
