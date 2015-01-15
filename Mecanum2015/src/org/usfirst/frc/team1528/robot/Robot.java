@@ -49,6 +49,10 @@ public class Robot extends SampleRobot {
     ExecutiveRelease release;
     Thread releaseThread;
     
+    Talon rightLift, leftLift;
+    LiftControl lift;
+    Thread liftThread;
+    
     DriveState orientationSwitcher;
     Thread orientationThread;
     
@@ -65,6 +69,11 @@ public class Robot extends SampleRobot {
         
         control = new ExecutiveOrder(moveStick,shootStick,Y_BUTTON);
         release = new ExecutiveRelease(control);
+        
+        rightLift = new Talon(4);
+        leftLift = new Talon(5);
+        lift = new LiftControl(control, TRIGGERS_AXIS, TRIGGERS_AXIS, true, false, leftLift, rightLift);
+        liftThread = new Thread(lift);
         
         autoChooser = new SendableChooser();
         autoChooser.addDefault("Auto Forward", new Integer(1));
