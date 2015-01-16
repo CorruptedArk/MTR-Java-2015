@@ -72,8 +72,8 @@ public class Robot extends SampleRobot {
         
         rightLift = new Talon(4);
         leftLift = new Talon(5);
-        lift = new LiftControl(control, TRIGGERS_AXIS, TRIGGERS_AXIS, true, false, leftLift, rightLift);
-        liftThread = new Thread(lift);
+        
+        
         
         autoChooser = new SendableChooser();
         autoChooser.addDefault("Auto Forward", new Integer(1));
@@ -185,6 +185,10 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
+        lift = new LiftControl(shootStick, TRIGGERS_AXIS, TRIGGERS_AXIS, true, false, leftLift, rightLift);
+        liftThread = new Thread(lift);
+        liftThread.start();
+        
         double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
         
         while (isOperatorControl() && isEnabled()) {
@@ -199,7 +203,7 @@ public class Robot extends SampleRobot {
             Timer.delay(0.01);
         }
         orientationSwitcher.stop();
-        
+        lift.stop();
     }
     
     /**
@@ -212,6 +216,10 @@ public class Robot extends SampleRobot {
         orientationSwitcher = new DriveState(true,moveStick,A_BUTTON);
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
+        
+        lift = new LiftControl(control, TRIGGERS_AXIS, TRIGGERS_AXIS, true, false, leftLift, rightLift);
+        liftThread = new Thread(lift);
+        liftThread.start();
         
         double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
         
@@ -232,6 +240,7 @@ public class Robot extends SampleRobot {
         
         release.stop();
         orientationSwitcher.stop();
+        lift.stop();
     }
     
     /**
@@ -244,6 +253,10 @@ public class Robot extends SampleRobot {
         orientationSwitcher = new DriveState(true,control,A_BUTTON);
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
+        
+        lift = new LiftControl(control, TRIGGERS_AXIS, TRIGGERS_AXIS, true, false, leftLift, rightLift);
+        liftThread = new Thread(lift);
+        liftThread.start();
         
         double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
         
@@ -270,7 +283,8 @@ public class Robot extends SampleRobot {
         }
         
         release.stop();
-        orientationSwitcher.stop();  
+        orientationSwitcher.stop();
+        lift.stop();
     }
 
     /**

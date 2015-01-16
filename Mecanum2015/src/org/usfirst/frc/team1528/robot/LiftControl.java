@@ -13,6 +13,15 @@ public class LiftControl implements Runnable {
 	private final double defaultSpeed;
 	private final ExecutiveOrder order;
 	
+	/**
+	 * Constructor. Uses buttons and a single operator.
+	 * @param driver The operator's joystick.
+	 * @param upButtonID The ID of the up button.
+	 * @param downButtonID The ID of the down button.
+	 * @param defaultSpeed The speed of movement from 0 to 1.
+	 * @param leftMotor The left speed controller object.
+	 * @param rightMotor The right speed controller object.
+	 */
 	public LiftControl(Joystick driver, int upButtonID, int downButtonID, double defaultSpeed, SpeedController leftMotor, SpeedController rightMotor){
 		this.driver = driver;
 		this.order = null;
@@ -26,11 +35,20 @@ public class LiftControl implements Runnable {
 		}else if(defaultSpeed > 1){
 			defaultSpeed = 1;
 		}
-		this.defaultSpeed = defaultSpeed;
+		this.defaultSpeed = Math.abs(defaultSpeed);
 		this.upAxisPositive = false;
 		this.downAxisPositive = false;
 	}
 	
+	/**
+	 * Constructor. Uses buttons and a single operator.
+	 * @param driver The operator's joystick.
+	 * @param upAxisID The ID of the up axis.
+	 * @param downAxisID The ID of the down axis.
+	 * @param defaultSpeed The speed of movement from 0 to 1.
+	 * @param leftMotor The left speed controller object.
+	 * @param rightMotor The right speed controller object.
+	 */
 	public LiftControl(Joystick driver, int upAxisID, int downAxisID, boolean upAxisPositive, boolean downAxisPositive, SpeedController leftMotor, SpeedController rightMotor){
 		this.driver = driver;
 		this.order = null;
@@ -57,7 +75,7 @@ public class LiftControl implements Runnable {
 		}else if(defaultSpeed > 1){
 			defaultSpeed = 1;
 		}
-		this.defaultSpeed = defaultSpeed;
+		this.defaultSpeed = Math.abs(defaultSpeed);
 		this.upAxisPositive = false;
 		this.downAxisPositive = false;
 		
@@ -78,6 +96,7 @@ public class LiftControl implements Runnable {
 	
 	@Override
 	public void run() {
+		running = true;
 		if(order != null && inputType.equalsIgnoreCase("button")){
 			executiveButtonControl();
 		}else if(order != null && inputType.equalsIgnoreCase("axis")){
