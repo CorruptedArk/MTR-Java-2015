@@ -45,7 +45,8 @@ public class LiftControl implements Runnable {
 	 * @param driver The operator's joystick.
 	 * @param upAxisID The ID of the up axis.
 	 * @param downAxisID The ID of the down axis.
-	 * @param defaultSpeed The speed of movement from 0 to 1.
+	 * @param upAxisPostive Is it using the positive end of the up axis?
+	 * @param downAxisPositive Is it using the positive end of the up axis?
 	 * @param leftMotor The left speed controller object.
 	 * @param rightMotor The right speed controller object.
 	 */
@@ -62,6 +63,15 @@ public class LiftControl implements Runnable {
 		this.defaultSpeed = 0.0;
 	}
 	
+	/**
+	 * Constructor. Uses buttons and a single operator.
+	 * @param order The ExecutiveOrder of two operators.
+	 * @param upButtonID The ID of the up button.
+	 * @param downButtonID The ID of the down button.
+	 * @param defaultSpeed The speed of movement from 0 to 1.
+	 * @param leftMotor The left speed controller object.
+	 * @param rightMotor The right speed controller object.
+	 */
 	public LiftControl(ExecutiveOrder order, int upButtonID, int downButtonID, double defaultSpeed, SpeedController leftMotor, SpeedController rightMotor){
 		this.driver = null;
 		this.order = order;
@@ -81,6 +91,16 @@ public class LiftControl implements Runnable {
 		
 	}
 	
+	/**
+	 * Constructor. Uses buttons and a single operator.
+	 * @param order The ExecutiveOrder of two operators.
+	 * @param upAxisID The ID of the up axis.
+	 * @param downAxisID The ID of the down axis.
+	 * @param upAxisPostive Is it using the positive end of the up axis?
+	 * @param downAxisPositive Is it using the positive end of the up axis?
+	 * @param leftMotor The left speed controller object.
+	 * @param rightMotor The right speed controller object.
+	 */
 	public LiftControl(ExecutiveOrder order, int upAxisID, int downAxisID, boolean upAxisPositive, boolean downAxisPositive, SpeedController leftMotor, SpeedController rightMotor){
 		this.driver = null;
 		this.order = order;
@@ -111,6 +131,9 @@ public class LiftControl implements Runnable {
 		
 	}
 	
+	/**
+	 * Controls the lift with buttons and an ExecutiveOrder.
+	 */
 	private void executiveButtonControl(){
 		while(running){
 			if(getExecutiveButtonPressed(upID) && !getExecutiveButtonPressed(downID)){
@@ -129,6 +152,38 @@ public class LiftControl implements Runnable {
 		}
 	}
 	
+	/**
+	 * Controls the lift with axes and a single driver.
+	 */
+	private void executiveAxisControl(){
+		
+		while(running){
+			Joystick currentDriver;
+			
+			if(order.getReleaseState()){
+				currentDriver = order.congress;
+			}else{
+				currentDriver = order.president;
+			}
+			
+			if(getAxisPressed(upID,currentDriver,upAxisPositive) && !getAxisPressed(downID,currentDriver,downAxisPositive)){
+				leftMotor.set(buffer(upID,currentDriver,0.18,-0.18,true));
+				rightMotor.set(buffer(upID,currentDriver,0.18,-0.18,false));
+			}else if(!getAxisPressed(upID,currentDriver,upAxisPositive) && getAxisPressed(downID,currentDriver,downAxisPositive)){
+				leftMotor.set(buffer(downID,currentDriver,0.18,-0.18,false));
+				rightMotor.set(buffer(downID,currentDriver,0.18,-0.18,true));
+			}else{
+				leftMotor.set(0.0);
+				rightMotor.set(0.0);
+			}
+			Timer.delay(0.005);
+		}
+	}
+	
+	
+	/**
+	 * Controls the lift with buttons and a single driver.
+	 */
 	private void buttonControl(){
 		while(running){
 			if(driver.getRawButton(upID) && !driver.getRawButton(downID)){
@@ -147,14 +202,17 @@ public class LiftControl implements Runnable {
 		}
 	}
 	
+	/**
+	 * Controls lift with axes and a single driver.
+	 */
 	private void axisControl(){
 		while(running){
 			if(getAxisPressed(upID,driver,upAxisPositive) && !getAxisPressed(downID,driver,downAxisPositive)){
-				leftMotor.set(buffer(upID,driver,true,0.18,-0.18));
-				rightMotor.set(buffer(upID,driver,false,0.18,-0.18));
+				leftMotor.set(buffer(upID,driver,0.18,-0.18,true));
+				rightMotor.set(buffer(upID,driver,0.18,-0.18,false));
 			}else if(!getAxisPressed(upID,driver,upAxisPositive) && getAxisPressed(downID,driver,downAxisPositive)){
-				leftMotor.set(buffer(downID,driver,true,0.18,-0.18));
-				rightMotor.set(buffer(downID,driver,false,0.18,-0.18));
+				leftMotor.set(buffer(downID,driver,0.18,-0.18,false));
+				rightMotor.set(buffer(downID,driver,0.18,-0.18,true));
 			}else{
 				leftMotor.set(0.0);
 				rightMotor.set(0.0);
@@ -163,38 +221,17 @@ public class LiftControl implements Runnable {
 		}
 	}
 	
-	
-	private void executiveAxisControl(){
-		
-		while(running){
-			Joystick currentDriver;
-			
-			if(order.getReleaseState()){
-				currentDriver = order.congress;
-			}else{
-				currentDriver = order.president;
-			}
-			
-			if(getAxisPressed(upID,currentDriver,upAxisPositive) && !getAxisPressed(downID,currentDriver,downAxisPositive)){
-				leftMotor.set(buffer(upID,currentDriver,true,0.18,-0.18));
-				rightMotor.set(buffer(upID,currentDriver,false,0.18,-0.18));
-			}else if(!getAxisPressed(upID,currentDriver,upAxisPositive) && getAxisPressed(downID,currentDriver,downAxisPositive)){
-				leftMotor.set(buffer(downID,currentDriver,true,0.18,-0.18));
-				rightMotor.set(buffer(downID,currentDriver,false,0.18,-0.18));
-			}else{
-				leftMotor.set(0.0);
-				rightMotor.set(0.0);
-			}
-			Timer.delay(0.005);
-		}
-	}
+	/**
+	 * Stops the control loop.
+	 */
 	public void stop(){
 		running = false;
 	}
 	
 	 /**
      * Uses an ExecutiveOrder object to check if the button is pressed.
-     * @return pressed 
+     * @param toggler The toggler button ID
+     * @return Whether or not the button is pressed.
      */
     private boolean getExecutiveButtonPressed(int toggler) {
         boolean pressed = false;
@@ -210,12 +247,18 @@ public class LiftControl implements Runnable {
         
         return pressed;
     }
-    
-    private boolean getAxisPressed(int ID, Joystick currentDriver, boolean axisPositive){
+    /**
+     * Checks if axis is pressed.
+     * @param id ID of the axis 
+     * @param currentDriver The current driver.
+     * @param axisPositive Does the axis use the positive end?
+     * @return Whether or not the axis is pressed.
+     */
+    private boolean getAxisPressed(int id, Joystick currentDriver, boolean axisPositive){
     	boolean pressed;
-    	if(buffer(ID,driver,true,0.18,-0.18) > 0.0 == axisPositive){
+    	if(buffer(id,driver,true,0.18,-0.18) > 0.0 == axisPositive){
     		pressed = true;
-    	}else if(buffer(ID,driver,true,0.18,-0.18) < 0.0 == !axisPositive){
+    	}else if(buffer(id,driver,true,0.18,-0.18) < 0.0 == !axisPositive){
     		pressed = true;
     	}else{
     		pressed = false;
@@ -287,6 +330,35 @@ public class LiftControl implements Runnable {
         
         moveOut = moveOut/scale;
         
+	return moveOut;
+   }
+    
+    /**
+     * This function buffers Joystick.getRawAxis() input.
+     * @param axisNum The ID for the axis of a Joystick.
+     * @param joystickName The Joystick that input is coming from. 
+     * @param isPositive Is it positive?
+     * @param highMargin The high margin of the buffer.
+     * @param lowMargin The low margin of the buffer.
+     * @return moveOut - The buffered axis data from joystickName.getRawAxis().
+     **/
+    private double buffer(int axisNum, Joystick joystickName, double highMargin, double lowMargin, boolean isPositive) {
+        double moveIn = joystickName.getRawAxis(axisNum);
+        double moveOut;
+        moveOut = 0.0;
+        
+        if(moveIn >= lowMargin && moveIn <= highMargin ) {
+            moveOut = 0.0;
+        }
+        else{
+            if(isPositive){
+                moveOut = Math.abs(moveIn);
+            }
+            else{ 
+                moveOut = -Math.abs(moveIn);
+            }    
+        }
+	
 	return moveOut;
    }
 
