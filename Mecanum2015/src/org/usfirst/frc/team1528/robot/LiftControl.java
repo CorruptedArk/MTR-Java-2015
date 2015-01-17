@@ -41,7 +41,7 @@ public class LiftControl implements Runnable {
 	}
 	
 	/**
-	 * Constructor. Uses buttons and a single operator.
+	 * Constructor. Uses axes and a single operator.
 	 * @param driver The operator's joystick.
 	 * @param upAxisID The ID of the up axis.
 	 * @param downAxisID The ID of the down axis.
@@ -64,7 +64,7 @@ public class LiftControl implements Runnable {
 	}
 	
 	/**
-	 * Constructor. Uses buttons and a single operator.
+	 * Constructor. Uses buttons and an ExecutiveOrder.
 	 * @param order The ExecutiveOrder of two operators.
 	 * @param upButtonID The ID of the up button.
 	 * @param downButtonID The ID of the down button.
@@ -92,7 +92,7 @@ public class LiftControl implements Runnable {
 	}
 	
 	/**
-	 * Constructor. Uses buttons and a single operator.
+	 * Constructor. Uses axes and an ExecutiveOrder.
 	 * @param order The ExecutiveOrder of two operators.
 	 * @param upAxisID The ID of the up axis.
 	 * @param downAxisID The ID of the down axis.
@@ -153,7 +153,7 @@ public class LiftControl implements Runnable {
 	}
 	
 	/**
-	 * Controls the lift with axes and a single driver.
+	 * Controls the lift with axes and an ExecutiveOrder.
 	 */
 	private void executiveAxisControl(){
 		
