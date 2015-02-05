@@ -48,6 +48,10 @@ public class Robot extends SampleRobot {
     ExecutiveOrder control;
     ExecutiveRelease release;
     Thread releaseThread;
+
+    Solenoid test1, test2;
+    SolenoidClick testPiston;
+    Thread solenoidThread;
     
     Talon rightLift, leftLift;
     LiftControl lift;
@@ -69,6 +73,9 @@ public class Robot extends SampleRobot {
         
         control = new ExecutiveOrder(moveStick,shootStick,Y_BUTTON);
         release = new ExecutiveRelease(control);
+        
+        test1 = new Solenoid(2);
+        test2 = new Solenoid(3);
         
         rightLift = new Talon(4);
         leftLift = new Talon(5);
@@ -189,6 +196,13 @@ public class Robot extends SampleRobot {
         liftThread = new Thread(lift);
         liftThread.start();
         
+        test1.set(true);
+        test2.set(false);
+        
+        testPiston = new SolenoidClick(X_BUTTON, moveStick, test1, test2, "button");
+        solenoidThread = new Thread(testPiston);
+        solenoidThread.start();
+        
         double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
         
         while (isOperatorControl() && isEnabled()) {
@@ -204,6 +218,7 @@ public class Robot extends SampleRobot {
         }
         orientationSwitcher.stop();
         lift.stop();
+        testPiston.stop();
     }
     
     /**
@@ -220,6 +235,13 @@ public class Robot extends SampleRobot {
         lift = new LiftControl(control, TRIGGERS_AXIS, TRIGGERS_AXIS, true, false, leftLift, rightLift);
         liftThread = new Thread(lift);
         liftThread.start();
+        
+        test1.set(true);
+        test2.set(false);
+        
+        testPiston = new SolenoidClick(X_BUTTON, moveStick, test1, test2, "button");
+        solenoidThread = new Thread(testPiston);
+        solenoidThread.start();
         
         double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
         
@@ -241,6 +263,7 @@ public class Robot extends SampleRobot {
         release.stop();
         orientationSwitcher.stop();
         lift.stop();
+        testPiston.stop();
     }
     
     /**
@@ -257,6 +280,13 @@ public class Robot extends SampleRobot {
         lift = new LiftControl(control, TRIGGERS_AXIS, TRIGGERS_AXIS, true, false, leftLift, rightLift);
         liftThread = new Thread(lift);
         liftThread.start();
+        
+        test1.set(true);
+        test2.set(false);
+        
+        testPiston = new SolenoidClick(X_BUTTON, moveStick, test1, test2, "button");
+        solenoidThread = new Thread(testPiston);
+        solenoidThread.start();
         
         double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
         
@@ -285,6 +315,7 @@ public class Robot extends SampleRobot {
         release.stop();
         orientationSwitcher.stop();
         lift.stop();
+        testPiston.stop();
     }
 
     /**

@@ -9,7 +9,7 @@ package org.usfirst.frc.team1528.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Timer;
+
 
 /**
  *A Runnable class that toggles solenoids in parallel with a single input.
@@ -150,12 +150,11 @@ public class SolenoidClick implements Runnable{
                 solenoid2.set(!solenoid2.get());
                 while(pressed) {
                     pressed = joystickName.getRawButton(toggler);
-                    solenoid1.set(solenoid1.get());
-                    solenoid2.set(solenoid2.get());
-                    Timer.delay(0.005);
+                    
+                    
                 }
             }   
-            Timer.delay(0.005);
+            
         }
     }
     
@@ -175,12 +174,11 @@ public class SolenoidClick implements Runnable{
                 while(pressed) {
                     axisVal = joystickName.getRawAxis(toggler);
                     pressed = axisVal >= highMargin || axisVal <= lowMargin;
-                    solenoid1.set(solenoid1.get());
-                    solenoid2.set(solenoid2.get());
-                    Timer.delay(0.005);
+                    
+                    
                 }
             }
-            Timer.delay(0.005);
+            
         }
     }
     
@@ -196,13 +194,12 @@ public class SolenoidClick implements Runnable{
                 solenoid2.set(!solenoid2.get());
                 while(pressed) {
                     pressed = switch1.get();
-                    solenoid1.set(solenoid1.get());
-                    solenoid2.set(solenoid2.get());
-                    Timer.delay(0.005);
+                    
                 }
-            }
-            Timer.delay(0.005);
+            }      
+            
         }
+            
         
     }
 
@@ -219,12 +216,11 @@ public class SolenoidClick implements Runnable{
                 solenoid2.set(!solenoid2.get());
                 while(pressed) {
                     pressed = getExecutiveButtonPressed(); 
-                    solenoid1.set(solenoid1.get());
-                    solenoid2.set(solenoid2.get());
-                    Timer.delay(0.005);
+                    
+                    
                 }
             }   
-            Timer.delay(0.005);
+            
         }
     }
     
@@ -241,12 +237,11 @@ public class SolenoidClick implements Runnable{
                 solenoid2.set(!solenoid2.get());
                 while(pressed) {
                     pressed = getExecutiveAxisPressed(); 
-                    solenoid1.set(solenoid1.get());
-                    solenoid2.set(solenoid2.get());
-                    Timer.delay(0.005);
+                    
+                    
                 }
             }   
-            Timer.delay(0.005);
+          
         } 
     }
     
