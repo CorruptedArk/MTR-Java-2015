@@ -35,12 +35,13 @@ public class Robot extends SampleRobot {
     static final int RIGHT_JOYSTICK_CLICK = 10;
     
     //Constants for Axes
-    static final int LEFT_X_AXIS = 1;
-    static final int LEFT_Y_AXIS = 2;
-    static final int TRIGGERS_AXIS = 3;
+    static final int LEFT_X_AXIS = 0;
+    static final int LEFT_Y_AXIS = 1;
+    static final int LEFT_TRIGGER_AXIS = 2;
+    static final int RIGHT_TRIGGER_AXIS = 3;
     static final int RIGHT_X_AXIS = 4;
     static final int RIGHT_Y_AXIS = 5;
-    static final int D_PAD = 6; // Buggy, not recommended
+    static final int D_PAD = 6; 
 	
 	RobotDrive myDrive;
     Joystick moveStick, shootStick;
@@ -192,14 +193,14 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(shootStick, TRIGGERS_AXIS, TRIGGERS_AXIS, true, false, leftLift, rightLift);
+        lift = new LiftControl(shootStick,LEFT_BUMPER,RIGHT_BUMPER,0.5,leftLift,rightLift);
         liftThread = new Thread(lift);
         liftThread.start();
         
         test1.set(true);
         test2.set(false);
         
-        testPiston = new SolenoidClick(X_BUTTON, moveStick, test1, test2, "button");
+        testPiston = new SolenoidClick(X_BUTTON, shootStick, test1, test2, "button");
         solenoidThread = new Thread(testPiston);
         solenoidThread.start();
         
@@ -232,14 +233,14 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(control, TRIGGERS_AXIS, TRIGGERS_AXIS, true, false, leftLift, rightLift);
+        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,0.5,leftLift,rightLift);
         liftThread = new Thread(lift);
         liftThread.start();
         
         test1.set(true);
         test2.set(false);
         
-        testPiston = new SolenoidClick(X_BUTTON, moveStick, test1, test2, "button");
+        testPiston = new SolenoidClick(X_BUTTON, control, test1, test2, "button");
         solenoidThread = new Thread(testPiston);
         solenoidThread.start();
         
@@ -277,14 +278,14 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(control, TRIGGERS_AXIS, TRIGGERS_AXIS, true, false, leftLift, rightLift);
+        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,0.5,leftLift,rightLift);
         liftThread = new Thread(lift);
         liftThread.start();
         
         test1.set(true);
         test2.set(false);
         
-        testPiston = new SolenoidClick(X_BUTTON, moveStick, test1, test2, "button");
+        testPiston = new SolenoidClick(X_BUTTON, control, test1, test2, "button");
         solenoidThread = new Thread(testPiston);
         solenoidThread.start();
         

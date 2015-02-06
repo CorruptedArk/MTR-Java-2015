@@ -35,9 +35,10 @@ public class Robot extends SampleRobot {
     static final int RIGHT_JOYSTICK_CLICK = 10;
     
     //Constants for Axes
-    static final int LEFT_X_AXIS = 1;
-    static final int LEFT_Y_AXIS = 2;
-    static final int TRIGGERS_AXIS = 3;
+    static final int LEFT_X_AXIS = 0;
+    static final int LEFT_Y_AXIS = 1;
+    static final int LEFT_TRIGGER_AXIS = 2;
+    static final int RIGHT_TRIGGER_AXIS = 3;
     static final int RIGHT_X_AXIS = 4;
     static final int RIGHT_Y_AXIS = 5;
     static final int D_PAD = 6; // Buggy, not recommended
@@ -190,11 +191,11 @@ public class Robot extends SampleRobot {
      * Normal teleOp, doesn't use an ExecutiveOrder.
      */
     public void teleOpLoop0(){
-    	orientationSwitcher = new DriveState(true,moveStick,RIGHT_BUMPER);
+    	orientationSwitcher = new DriveState(true,moveStick,A_BUTTON);
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(shootStick,A_BUTTON,X_BUTTON,0.5,leftLift,rightLift);
+        lift = new LiftControl(shootStick,LEFT_BUMPER,RIGHT_BUMPER,0.5,leftLift,rightLift);
         liftThread = new Thread(lift);
         liftThread.start();
         
@@ -203,7 +204,7 @@ public class Robot extends SampleRobot {
         test1.set(true);
         test2.set(false);
         
-        testPiston = new SolenoidClick(X_BUTTON, moveStick, test1, test2, "button");
+        testPiston = new SolenoidClick(X_BUTTON, shootStick, test1, test2, "button");
         solenoidThread = new Thread(testPiston);
         solenoidThread.start();
         
@@ -213,7 +214,7 @@ public class Robot extends SampleRobot {
             boolean inverted = orientationSwitcher.getOrientation();
             double leftTank = buffer(LEFT_Y_AXIS,moveStick,inverted,0.18,-0.18,scale);
             double rightTank = buffer(RIGHT_Y_AXIS,moveStick,inverted,0.18,-0.18,scale);
-            double side = buffer(TRIGGERS_AXIS,moveStick,inverted,0.18,-0.18,scale);
+            double side = buffer(RIGHT_TRIGGER_AXIS,moveStick,inverted,0.18,-0.18,scale) - buffer(LEFT_TRIGGER_AXIS,moveStick,inverted,0.18,-0.18,scale);
             myDrive.tankDrive(leftTank, rightTank);
             centerDrive.set(side);
             
@@ -232,18 +233,18 @@ public class Robot extends SampleRobot {
     	releaseThread = new Thread(release);
         releaseThread.start();
         
-        orientationSwitcher = new DriveState(true,moveStick,RIGHT_BUMPER);
+        orientationSwitcher = new DriveState(true,moveStick,A_BUTTON);
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(control,A_BUTTON,X_BUTTON,0.5,leftLift,rightLift);
+        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,0.5,leftLift,rightLift);
         liftThread = new Thread(lift);
         liftThread.start();
         
         test1.set(true);
         test2.set(false);
         
-        testPiston = new SolenoidClick(X_BUTTON, moveStick, test1, test2, "button");
+        testPiston = new SolenoidClick(X_BUTTON, control, test1, test2, "button");
         solenoidThread = new Thread(testPiston);
         solenoidThread.start();
         
@@ -258,7 +259,7 @@ public class Robot extends SampleRobot {
             boolean inverted = orientationSwitcher.getOrientation();
             double leftTank = buffer(LEFT_Y_AXIS,moveStick,inverted,0.18,-0.18,scale);
             double rightTank = buffer(RIGHT_Y_AXIS,moveStick,inverted,0.18,-0.18,scale);
-            double side = buffer(TRIGGERS_AXIS,moveStick,inverted,0.18,-0.18,scale);
+            double side = buffer(RIGHT_TRIGGER_AXIS,moveStick,inverted,0.18,-0.18,scale) - buffer(LEFT_TRIGGER_AXIS,moveStick,inverted,0.18,-0.18,scale);
             myDrive.tankDrive(leftTank, rightTank);
             centerDrive.set(side);
             
@@ -279,18 +280,18 @@ public class Robot extends SampleRobot {
     	releaseThread = new Thread(release);
         releaseThread.start();
         
-        orientationSwitcher = new DriveState(true,control,RIGHT_BUMPER);
+        orientationSwitcher = new DriveState(true,control,A_BUTTON);
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(control,A_BUTTON,X_BUTTON,0.5,leftLift,rightLift);
+        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,0.5,leftLift,rightLift);
         liftThread = new Thread(lift);
         liftThread.start();
         
         test1.set(true);
         test2.set(false);
         
-        testPiston = new SolenoidClick(X_BUTTON, moveStick, test1, test2, "button");
+        testPiston = new SolenoidClick(X_BUTTON, control, test1, test2, "button");
         solenoidThread = new Thread(testPiston);
         solenoidThread.start();
         
@@ -312,7 +313,7 @@ public class Robot extends SampleRobot {
             boolean inverted = orientationSwitcher.getOrientation();
             double leftTank = buffer(LEFT_Y_AXIS,currentDriver,inverted,0.18,-0.18,scale);
             double rightTank = buffer(RIGHT_Y_AXIS,currentDriver,inverted,0.18,-0.18,scale);
-            double side = buffer(TRIGGERS_AXIS,currentDriver,inverted,0.18,-0.18,scale);
+            double side = buffer(RIGHT_TRIGGER_AXIS,moveStick,inverted,0.18,-0.18,scale) - buffer(LEFT_TRIGGER_AXIS,moveStick,inverted,0.18,-0.18,scale);
             myDrive.tankDrive(leftTank, rightTank);
             centerDrive.set(side);
             
