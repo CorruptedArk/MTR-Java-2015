@@ -68,7 +68,7 @@ public class Robot extends SampleRobot {
     
 
     public Robot() {
-        myDrive = new RobotDrive(0,1,2,3);
+        myDrive = new RobotDrive(0,1,3,2);
         moveStick = new Joystick(0);
         shootStick = new Joystick(1);
         
@@ -99,6 +99,7 @@ public class Robot extends SampleRobot {
         
         myDrive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
         myDrive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
+        
     }
 
     /**
