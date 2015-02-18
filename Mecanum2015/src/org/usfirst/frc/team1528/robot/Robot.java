@@ -95,6 +95,7 @@ public class Robot extends SampleRobot {
         SmartDashboard.putData("Autonomous Chooser", autoChooser);
         SmartDashboard.putData("TeleOp Chooser", teleChooser);
         SmartDashboard.putNumber("Scale Down Factor", 1);
+        SmartDashboard.putNumber("Default Lift Speed", 0.5);
         
         myDrive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
         myDrive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
@@ -172,28 +173,39 @@ public class Robot extends SampleRobot {
         myDrive.setSafetyEnabled(true);
         teleID = (Integer)teleChooser.getSelected();
         
+        double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
+        double liftSpeed = SmartDashboard.getNumber("Default Lift Speed", 0.5);
+        
+        liftSpeed = Math.abs(liftSpeed);
+        
+        if(liftSpeed > 1){
+        	liftSpeed = 1;
+        }
+        
         switch(teleID.intValue()) {
             case 0:
-                teleOpLoop0();
+                teleOpLoop0(scale,liftSpeed);
                 break;
             case 1:
-                teleOpLoop1();
+                teleOpLoop1(scale,liftSpeed);
                 break;
             case 2:
-                teleOpLoop2();
+                teleOpLoop2(scale,liftSpeed);
                 break;
         }
     }
     
     /**
      * Normal teleOp, doesn't use an ExecutiveOrder.
+     * @param scale The amount to divide the speed by.
+     * @param liftSpeed The speed of the lift if buttons are used to control it.
      */
-    public void teleOpLoop0(){
+    public void teleOpLoop0(double scale, double liftSpeed){
     	orientationSwitcher = new DriveState(true,moveStick,A_BUTTON);
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(shootStick,LEFT_BUMPER,RIGHT_BUMPER,0.5,liftMotor);
+        lift = new LiftControl(shootStick,LEFT_BUMPER,RIGHT_BUMPER,liftSpeed,liftMotor);
         liftThread = new Thread(lift);
         liftThread.start();
         
@@ -204,7 +216,6 @@ public class Robot extends SampleRobot {
         solenoidThread = new Thread(testPiston);
         solenoidThread.start();
         
-        double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
         
         while (isOperatorControl() && isEnabled()) {
             myDrive.setSafetyEnabled(true);
@@ -224,8 +235,10 @@ public class Robot extends SampleRobot {
     
     /**
      * Restricted teleOp, only uses ExecutiveOrder to override accessories.
+     * @param scale The amount to divide the speed by.
+     * @param liftSpeed The speed of the lift if buttons are used to control it.
      */
-    public void teleOpLoop1() {
+    public void teleOpLoop1(double scale, double liftSpeed) {
     	releaseThread = new Thread(release);
         releaseThread.start();
         
@@ -233,7 +246,7 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,0.5,liftMotor);
+        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,liftSpeed,liftMotor);
         liftThread = new Thread(lift);
         liftThread.start();
         
@@ -244,7 +257,6 @@ public class Robot extends SampleRobot {
         solenoidThread = new Thread(testPiston);
         solenoidThread.start();
         
-        double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
         
         while (isOperatorControl() && isEnabled()) {
             myDrive.setSafetyEnabled(true);
@@ -269,8 +281,10 @@ public class Robot extends SampleRobot {
     
     /**
      * Guest teleOp, uses ExecutiveOrder for full system.
+     * @param scale The amount to divide the speed by.
+     * @param liftSpeed The speed of the lift if buttons are used to control it.
      */
-    public void teleOpLoop2() { 
+    public void teleOpLoop2(double scale, double liftSpeed) { 
     	releaseThread = new Thread(release);
         releaseThread.start();
         
@@ -278,7 +292,7 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,0.5,liftMotor);
+        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,liftSpeed,liftMotor);
         liftThread = new Thread(lift);
         liftThread.start();
         
@@ -289,7 +303,6 @@ public class Robot extends SampleRobot {
         solenoidThread = new Thread(testPiston);
         solenoidThread.start();
         
-        double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
         
         while (isOperatorControl() && isEnabled()) {
             myDrive.setSafetyEnabled(true); 
