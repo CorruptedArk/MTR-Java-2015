@@ -55,7 +55,7 @@ public class Robot extends SampleRobot {
     SolenoidClick testPiston;
     Thread solenoidThread;
     
-    Talon rightLift, leftLift;
+    Talon liftMotor;
     LiftControl lift;
     Thread liftThread;
     
@@ -80,8 +80,7 @@ public class Robot extends SampleRobot {
         test1 = new Solenoid(2);
         test2 = new Solenoid(3);
         
-        rightLift = new Talon(3);
-        leftLift = new Talon(4);
+        liftMotor = new Talon(3);
         
         
         
@@ -195,7 +194,7 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(shootStick,LEFT_BUMPER,RIGHT_BUMPER,0.5,leftLift,rightLift);
+        lift = new LiftControl(shootStick,LEFT_BUMPER,RIGHT_BUMPER,0.5,liftMotor);
         liftThread = new Thread(lift);
         liftThread.start();
         
@@ -237,7 +236,7 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,0.5,leftLift,rightLift);
+        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,0.5,liftMotor);
         liftThread = new Thread(lift);
         liftThread.start();
         
@@ -284,7 +283,7 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,0.5,leftLift,rightLift);
+        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,0.5,liftMotor);
         liftThread = new Thread(lift);
         liftThread.start();
         

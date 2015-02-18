@@ -8,7 +8,7 @@ public class LiftControl implements Runnable {
 	private final Joystick driver;
 	private final int upID, downID;
 	private final boolean upAxisPositive, downAxisPositive;
-	private final SpeedController leftMotor, rightMotor;
+	private final SpeedController motor;
 	private final String inputType;
 	private final double defaultSpeed;
 	private final ExecutiveOrder order;
@@ -19,16 +19,14 @@ public class LiftControl implements Runnable {
 	 * @param upButtonID The ID of the up button.
 	 * @param downButtonID The ID of the down button.
 	 * @param defaultSpeed The speed of movement from 0 to 1.
-	 * @param leftMotor The left speed controller object.
-	 * @param rightMotor The right speed controller object.
+	 * @param motor The speed controller object.
 	 */
-	public LiftControl(Joystick driver, int upButtonID, int downButtonID, double defaultSpeed, SpeedController leftMotor, SpeedController rightMotor){
+	public LiftControl(Joystick driver, int upButtonID, int downButtonID, double defaultSpeed, SpeedController motor){
 		this.driver = driver;
 		this.order = null;
 		this.upID = upButtonID;
 		this.downID = downButtonID;
-		this.leftMotor = leftMotor;
-		this.rightMotor = rightMotor;
+		this.motor = motor;
 		this.inputType = "button";
 		if(defaultSpeed < -1){
 			defaultSpeed = -1;
@@ -47,18 +45,16 @@ public class LiftControl implements Runnable {
 	 * @param downAxisID The ID of the down axis.
 	 * @param upAxisPostive Is it using the positive end of the up axis?
 	 * @param downAxisPositive Is it using the positive end of the up axis?
-	 * @param leftMotor The left speed controller object.
-	 * @param rightMotor The right speed controller object.
+	 * @param motor The speed controller object.
 	 */
-	public LiftControl(Joystick driver, int upAxisID, int downAxisID, boolean upAxisPositive, boolean downAxisPositive, SpeedController leftMotor, SpeedController rightMotor){
+	public LiftControl(Joystick driver, int upAxisID, int downAxisID, boolean upAxisPositive, boolean downAxisPositive, SpeedController motor){
 		this.driver = driver;
 		this.order = null;
 		this.upID = upAxisID;
 		this.downID = downAxisID;
 		this.upAxisPositive = upAxisPositive;
 		this.downAxisPositive = downAxisPositive;
-		this.leftMotor = leftMotor;
-		this.rightMotor = rightMotor;
+		this.motor = motor;
 		this.inputType = "axis";
 		this.defaultSpeed = 0.0;
 	}
@@ -69,16 +65,14 @@ public class LiftControl implements Runnable {
 	 * @param upButtonID The ID of the up button.
 	 * @param downButtonID The ID of the down button.
 	 * @param defaultSpeed The speed of movement from 0 to 1.
-	 * @param leftMotor The left speed controller object.
-	 * @param rightMotor The right speed controller object.
+	 * @param motor The speed controller object.
 	 */
-	public LiftControl(ExecutiveOrder order, int upButtonID, int downButtonID, double defaultSpeed, SpeedController leftMotor, SpeedController rightMotor){
+	public LiftControl(ExecutiveOrder order, int upButtonID, int downButtonID, double defaultSpeed, SpeedController motor){
 		this.driver = null;
 		this.order = order;
 		this.upID = upButtonID;
 		this.downID = downButtonID;
-		this.leftMotor = leftMotor;
-		this.rightMotor = rightMotor;
+		this.motor = motor;
 		this.inputType = "button";
 		if(defaultSpeed < -1){
 			defaultSpeed = -1;
@@ -98,18 +92,16 @@ public class LiftControl implements Runnable {
 	 * @param downAxisID The ID of the down axis.
 	 * @param upAxisPostive Is it using the positive end of the up axis?
 	 * @param downAxisPositive Is it using the positive end of the up axis?
-	 * @param leftMotor The left speed controller object.
-	 * @param rightMotor The right speed controller object.
+	 * @param motor The speed controller object.
 	 */
-	public LiftControl(ExecutiveOrder order, int upAxisID, int downAxisID, boolean upAxisPositive, boolean downAxisPositive, SpeedController leftMotor, SpeedController rightMotor){
+	public LiftControl(ExecutiveOrder order, int upAxisID, int downAxisID, boolean upAxisPositive, boolean downAxisPositive, SpeedController motor){
 		this.driver = null;
 		this.order = order;
 		this.upID = upAxisID;
 		this.downID = downAxisID;
 		this.upAxisPositive = upAxisPositive;
 		this.downAxisPositive = downAxisPositive;
-		this.leftMotor = leftMotor;
-		this.rightMotor = rightMotor;
+		this.motor = motor;
 		this.inputType = "axis";
 		this.defaultSpeed = 0.0;
 	}
@@ -137,14 +129,12 @@ public class LiftControl implements Runnable {
 	private void executiveButtonControl(){
 		while(running){
 			if(getExecutiveButtonPressed(upID) && !getExecutiveButtonPressed(downID)){
-				leftMotor.set(defaultSpeed);
-				rightMotor.set(-defaultSpeed);
+				motor.set(defaultSpeed);
 			}else if(!getExecutiveButtonPressed(upID) && getExecutiveButtonPressed(downID)){
-				leftMotor.set(-defaultSpeed);
-				rightMotor.set(defaultSpeed);
+				motor.set(-defaultSpeed);
+				
 			}else{
-				leftMotor.set(0.0);
-				rightMotor.set(0.0);
+				motor.set(0.0);
 			}
 			
 			
@@ -167,14 +157,11 @@ public class LiftControl implements Runnable {
 			}
 			
 			if(getAxisPressed(upID,currentDriver,upAxisPositive) && !getAxisPressed(downID,currentDriver,downAxisPositive)){
-				leftMotor.set(buffer(upID,currentDriver,0.18,-0.18,true));
-				rightMotor.set(buffer(upID,currentDriver,0.18,-0.18,false));
+				motor.set(buffer(upID,currentDriver,0.18,-0.18,true));
 			}else if(!getAxisPressed(upID,currentDriver,upAxisPositive) && getAxisPressed(downID,currentDriver,downAxisPositive)){
-				leftMotor.set(buffer(downID,currentDriver,0.18,-0.18,false));
-				rightMotor.set(buffer(downID,currentDriver,0.18,-0.18,true));
+				motor.set(buffer(downID,currentDriver,0.18,-0.18,false));
 			}else{
-				leftMotor.set(0.0);
-				rightMotor.set(0.0);
+				motor.set(0.0);
 			}
 			Timer.delay(0.005);
 		}
@@ -187,14 +174,11 @@ public class LiftControl implements Runnable {
 	private void buttonControl(){
 		while(running){
 			if(driver.getRawButton(upID) && !driver.getRawButton(downID)){
-				leftMotor.set(defaultSpeed);
-				rightMotor.set(-defaultSpeed);
+				motor.set(defaultSpeed);
 			}else if(!driver.getRawButton(upID) && driver.getRawButton(downID)){
-				leftMotor.set(-defaultSpeed);
-				rightMotor.set(defaultSpeed);
+				motor.set(-defaultSpeed);
 			}else{
-				leftMotor.set(0.0);
-				rightMotor.set(0.0);
+				motor.set(0.0);
 			}
 			
 			
@@ -208,14 +192,11 @@ public class LiftControl implements Runnable {
 	private void axisControl(){
 		while(running){
 			if(getAxisPressed(upID,driver,upAxisPositive) && !getAxisPressed(downID,driver,downAxisPositive)){
-				leftMotor.set(buffer(upID,driver,0.18,-0.18,true));
-				rightMotor.set(buffer(upID,driver,0.18,-0.18,false));
+				motor.set(buffer(upID,driver,0.18,-0.18,true));
 			}else if(!getAxisPressed(upID,driver,upAxisPositive) && getAxisPressed(downID,driver,downAxisPositive)){
-				leftMotor.set(buffer(downID,driver,0.18,-0.18,false));
-				rightMotor.set(buffer(downID,driver,0.18,-0.18,true));
+				motor.set(buffer(downID,driver,0.18,-0.18,false));
 			}else{
-				leftMotor.set(0.0);
-				rightMotor.set(0.0);
+				motor.set(0.0);
 			}
 			Timer.delay(0.005);
 		}
