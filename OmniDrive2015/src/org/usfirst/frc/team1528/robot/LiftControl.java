@@ -207,6 +207,7 @@ public class LiftControl implements Runnable {
 	 */
 	public void stop(){
 		running = false;
+		motor.set(0.0);
 	}
 	
 	 /**
