@@ -3,6 +3,7 @@ package org.usfirst.frc.team1528.robot;
 
 
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.tables.*;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
 /**
@@ -50,9 +51,9 @@ public class Robot extends SampleRobot {
     ExecutiveRelease release;
     Thread releaseThread;
 
-    Solenoid test1, test2;
-    SolenoidClick testPiston;
-    Thread solenoidThread;
+    Solenoid grabberOut, grabberIn, brakeOut, brakeIn;
+    SolenoidClick grabPiston; 
+    Thread grabThread;
     
     Talon liftMotor;
     LiftControl lift;
@@ -66,6 +67,7 @@ public class Robot extends SampleRobot {
     SendableChooser teleChooser;
     Integer teleID;
     
+    AutonomousManager autoManager;
 
     public Robot() {
         myDrive = new RobotDrive(0,1,3,2);
@@ -75,8 +77,11 @@ public class Robot extends SampleRobot {
         control = new ExecutiveOrder(moveStick,shootStick,Y_BUTTON);
         release = new ExecutiveRelease(control);
         
-        test1 = new Solenoid(2);
-        test2 = new Solenoid(3);
+        grabberOut = new Solenoid(1);
+        grabberIn = new Solenoid(2);
+        brakeOut = new Solenoid(3);
+        brakeIn = new Solenoid(4);
+        
         
         liftMotor = new Talon(4);
         
@@ -86,16 +91,22 @@ public class Robot extends SampleRobot {
         autoChooser.addDefault("Auto Forward", new Integer(1));
         autoChooser.addObject("Auto Sideways", new Integer(2));
         autoChooser.addObject("Auto Twist", new Integer(3));
+        autoChooser.addObject("Advanced", new Integer(4));
         
         teleChooser = new SendableChooser();
         teleChooser.addDefault("Default", new Integer(0));
         teleChooser.addObject("Secondary", new Integer(1));
         teleChooser.addObject("Guest Driver", new Integer(2));
         
+        autoManager = new AutonomousManager(myDrive, liftMotor, grabberOut, grabberIn, brakeOut, brakeIn);
+        
         SmartDashboard.putData("Autonomous Chooser", autoChooser);
         SmartDashboard.putData("TeleOp Chooser", teleChooser);
         SmartDashboard.putNumber("Scale Down Factor", 1);
         SmartDashboard.putNumber("Default Lift Speed", 0.5);
+        
+        SmartDashboard.putBoolean("Add Step 0", false);
+        
         
         myDrive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
         myDrive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
@@ -124,6 +135,9 @@ public class Robot extends SampleRobot {
             case 3:
                 autonomous3(scale);
                 break;
+            case 4:
+            	autonomous4();
+            	break;
         }
     }
     
@@ -167,6 +181,12 @@ public class Robot extends SampleRobot {
     }
 
     /**
+     * Advanced autonomous. Allows user to define steps without needing to recompile code.
+     */
+    public void autonomous4(){
+    	autoManager.performAllActions();
+    }
+    /**
      * This function is called once each time the robot enters operator control.
      */
     public void operatorControl() {
@@ -209,12 +229,15 @@ public class Robot extends SampleRobot {
         liftThread = new Thread(lift);
         liftThread.start();
         
-        test1.set(true);
-        test2.set(false);
+        brakeOut.set(true);
+        brakeIn.set(false);
         
-        testPiston = new SolenoidClick(X_BUTTON, shootStick, test1, test2, "button");
-        solenoidThread = new Thread(testPiston);
-        solenoidThread.start();
+        grabberOut.set(false);
+        grabberIn.set(true);
+        
+        grabPiston = new SolenoidClick(X_BUTTON, shootStick, grabberOut, grabberIn, "button");
+        grabThread = new Thread(grabPiston);
+        grabThread.start();
         
         
         while (isOperatorControl() && isEnabled()) {
@@ -230,7 +253,7 @@ public class Robot extends SampleRobot {
         }
         orientationSwitcher.stop();
         lift.stop();
-        testPiston.stop();
+        grabPiston.stop();
     }
     
     /**
@@ -250,12 +273,15 @@ public class Robot extends SampleRobot {
         liftThread = new Thread(lift);
         liftThread.start();
         
-        test1.set(true);
-        test2.set(false);
+        brakeOut.set(true);
+        brakeIn.set(false);
         
-        testPiston = new SolenoidClick(X_BUTTON, control, test1, test2, "button");
-        solenoidThread = new Thread(testPiston);
-        solenoidThread.start();
+        grabberOut.set(false);
+        grabberIn.set(true);
+        
+        grabPiston = new SolenoidClick(X_BUTTON, control, grabberOut, grabberIn, "button");
+        grabThread = new Thread(grabPiston);
+        grabThread.start();
         
         
         while (isOperatorControl() && isEnabled()) {
@@ -276,7 +302,7 @@ public class Robot extends SampleRobot {
         release.stop();
         orientationSwitcher.stop();
         lift.stop();
-        testPiston.stop();
+        grabPiston.stop();
     }
     
     /**
@@ -296,12 +322,15 @@ public class Robot extends SampleRobot {
         liftThread = new Thread(lift);
         liftThread.start();
         
-        test1.set(true);
-        test2.set(false);
+        brakeOut.set(true);
+        brakeIn.set(false);
         
-        testPiston = new SolenoidClick(X_BUTTON, control, test1, test2, "button");
-        solenoidThread = new Thread(testPiston);
-        solenoidThread.start();
+        grabberOut.set(false);
+        grabberIn.set(true);
+        
+        grabPiston = new SolenoidClick(X_BUTTON, control, grabberOut, grabberIn, "button");
+        grabThread = new Thread(grabPiston);
+        grabThread.start();
         
         
         while (isOperatorControl() && isEnabled()) {
@@ -329,14 +358,64 @@ public class Robot extends SampleRobot {
         release.stop();
         orientationSwitcher.stop();
         lift.stop();
-        testPiston.stop();
+        grabPiston.stop();
     }
 
+    /**
+     * While robot is disabled, the operator will be able to edit the actions for advanced autonomous.
+     */
+    
+    @Override
+    public void disabled(){
+    	while(isDisabled()){
+    		SmartDashboard.putBoolean("Advanced Auto Is Updating", true);
+    		for(int i=0; i <= autoManager.actionList.size(); i++){
+    			
+    			
+    			try{
+    				if(SmartDashboard.getBoolean("Add Step " + i)){
+    					try{
+    						
+    						AutoAction action = new AutoAction(SmartDashboard.getNumber("X Movement " + i), 
+    								SmartDashboard.getNumber("Y Movement " + i), 
+    								SmartDashboard.getNumber("Twist " + i) , 
+    								SmartDashboard.getNumber("Wait Time " + i), 
+    								SmartDashboard.getNumber("Lift Speed " + i),
+    								SmartDashboard.getBoolean("Open Lift " + i));
+    						if(!autoManager.actionList.get(i).equals(action)){
+    							autoManager.actionList.set(i, action);
+    						}
+    						
+    					}catch(TableKeyNotDefinedException e){
+    						
+    						SmartDashboard.putNumber("X Movement " + i, 0.0);
+    						SmartDashboard.putNumber("Y Movement " + i, 0.0);
+    						SmartDashboard.putNumber("Twist " + i, 0.0);
+    						SmartDashboard.putNumber("Wait Time " + i, 0.0);
+    						SmartDashboard.putNumber("Lift Speed" + i, 0.0);
+    						SmartDashboard.putBoolean("Open Lift" + i, false);
+    						SmartDashboard.putBoolean("Add Step" + i + 1, false);
+    						
+    						autoManager.addAutoAction(0.0, 0.0, 0.0, 0.0, 0.0, false);
+    				
+    					}
+    				}
+    			}catch(TableKeyNotDefinedException e){
+    				
+    			}
+    		}
+    		SmartDashboard.putBoolean("Advanced Auto Is Updating", false);
+    		Timer.delay(10.0);
+    		
+    	}
+    	SmartDashboard.putBoolean("Advanced Auto Is Updating", false);		
+    }
+    
     /**
      * Runs during test mode
      */
     public void test() {
-    }
+    }  
     
     /**
      * This function buffers Joystick.getRawAxis() input.
