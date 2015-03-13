@@ -51,9 +51,9 @@ public class Robot extends SampleRobot {
     ExecutiveRelease release;
     Thread releaseThread;
 
-    Solenoid grabberOut, grabberIn, brakeOut, brakeIn;
-    SolenoidClick grabPiston; 
-    Thread grabThread;
+    //Solenoid grabberOut, grabberIn, brakeOut, brakeIn;
+    //SolenoidClick grabPiston; 
+    //Thread grabThread;
     
     Talon liftMotor;
     LiftControl lift;
@@ -77,10 +77,9 @@ public class Robot extends SampleRobot {
         control = new ExecutiveOrder(moveStick,shootStick,Y_BUTTON);
         release = new ExecutiveRelease(control);
         
-        grabberOut = new Solenoid(1);
-        grabberIn = new Solenoid(2);
-        brakeOut = new Solenoid(3);
-        brakeIn = new Solenoid(4);
+        
+        //brakeOut = new Solenoid(1);
+        //brakeIn = new Solenoid(2);
         
         
         liftMotor = new Talon(4);
@@ -98,7 +97,7 @@ public class Robot extends SampleRobot {
         teleChooser.addObject("Secondary", new Integer(1));
         teleChooser.addObject("Guest Driver", new Integer(2));
         
-        autoManager = new AutonomousManager(myDrive, liftMotor, grabberOut, grabberIn, brakeOut, brakeIn);
+        autoManager = new AutonomousManager(myDrive, liftMotor);
         
         SmartDashboard.putData("Autonomous Chooser", autoChooser);
         SmartDashboard.putData("TeleOp Chooser", teleChooser);
@@ -229,15 +228,8 @@ public class Robot extends SampleRobot {
         liftThread = new Thread(lift);
         liftThread.start();
         
-        brakeOut.set(true);
-        brakeIn.set(false);
-        
-        grabberOut.set(false);
-        grabberIn.set(true);
-        
-        grabPiston = new SolenoidClick(X_BUTTON, shootStick, grabberOut, grabberIn, "button");
-        grabThread = new Thread(grabPiston);
-        grabThread.start();
+        //brakeOut.set(true);
+        //brakeIn.set(false);
         
         
         while (isOperatorControl() && isEnabled()) {
@@ -253,7 +245,7 @@ public class Robot extends SampleRobot {
         }
         orientationSwitcher.stop();
         lift.stop();
-        grabPiston.stop();
+        
     }
     
     /**
@@ -273,15 +265,10 @@ public class Robot extends SampleRobot {
         liftThread = new Thread(lift);
         liftThread.start();
         
-        brakeOut.set(true);
-        brakeIn.set(false);
+        //brakeOut.set(true);
+        //brakeIn.set(false);
         
-        grabberOut.set(false);
-        grabberIn.set(true);
         
-        grabPiston = new SolenoidClick(X_BUTTON, control, grabberOut, grabberIn, "button");
-        grabThread = new Thread(grabPiston);
-        grabThread.start();
         
         
         while (isOperatorControl() && isEnabled()) {
@@ -302,7 +289,6 @@ public class Robot extends SampleRobot {
         release.stop();
         orientationSwitcher.stop();
         lift.stop();
-        grabPiston.stop();
     }
     
     /**
@@ -322,15 +308,8 @@ public class Robot extends SampleRobot {
         liftThread = new Thread(lift);
         liftThread.start();
         
-        brakeOut.set(true);
-        brakeIn.set(false);
-        
-        grabberOut.set(false);
-        grabberIn.set(true);
-        
-        grabPiston = new SolenoidClick(X_BUTTON, control, grabberOut, grabberIn, "button");
-        grabThread = new Thread(grabPiston);
-        grabThread.start();
+        //brakeOut.set(true);
+        //brakeIn.set(false);
         
         
         while (isOperatorControl() && isEnabled()) {
@@ -358,7 +337,6 @@ public class Robot extends SampleRobot {
         release.stop();
         orientationSwitcher.stop();
         lift.stop();
-        grabPiston.stop();
     }
 
     /**
@@ -380,8 +358,7 @@ public class Robot extends SampleRobot {
     								SmartDashboard.getNumber("Y Movement " + i), 
     								SmartDashboard.getNumber("Twist " + i) , 
     								SmartDashboard.getNumber("Wait Time " + i), 
-    								SmartDashboard.getNumber("Lift Speed " + i),
-    								SmartDashboard.getBoolean("Open Lift " + i));
+    								SmartDashboard.getNumber("Lift Speed " + i));
     						if(!autoManager.actionList.get(i).equals(action)){
     							autoManager.actionList.set(i, action);
     						}
@@ -396,7 +373,7 @@ public class Robot extends SampleRobot {
     						SmartDashboard.putBoolean("Open Lift" + i, false);
     						SmartDashboard.putBoolean("Add Step" + i + 1, false);
     						
-    						autoManager.addAutoAction(0.0, 0.0, 0.0, 0.0, 0.0, false);
+    						autoManager.addAutoAction(0.0, 0.0, 0.0, 0.0, 0.0);
     				
     					}
     				}

@@ -9,7 +9,7 @@ package org.usfirst.frc.team1528.robot;
  */
 public class AutoAction{
 	double xMovement, yMovement, twist, time, motorSpeed;
-	boolean openLift;
+	
 	
 	/**
 	 * Constructor.
@@ -20,13 +20,12 @@ public class AutoAction{
 	 * @param motorSpeed The up/down motion of the lift.
 	 * @param openLift Will the grabber be open?
 	 */
-	public AutoAction(double xMovement, double yMovement, double twist, double time, double motorSpeed, boolean openLift){
+	public AutoAction(double xMovement, double yMovement, double twist, double time, double motorSpeed){
 		this.xMovement = xMovement;
 		this.yMovement = yMovement;
 		this.twist = twist;
 		this.time = time;
 		this.motorSpeed = motorSpeed;
-		this.openLift = openLift;
 	}
 	
 	/**
@@ -39,8 +38,7 @@ public class AutoAction{
 		return action.xMovement == xMovement 
 				&& action.yMovement == yMovement
 				&& action.twist == twist
-				&& action.motorSpeed == motorSpeed
-				&& action.openLift == openLift;
+				&& action.motorSpeed == motorSpeed;
 	}
 	
 }
