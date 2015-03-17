@@ -12,6 +12,7 @@ public class LiftControl implements Runnable {
 	private final String inputType;
 	private final double defaultSpeed;
 	private final ExecutiveOrder order;
+	private final DigitalInput liftSwitch;
 	
 	/**
 	 * Constructor. Uses buttons and a single operator.
@@ -21,7 +22,7 @@ public class LiftControl implements Runnable {
 	 * @param defaultSpeed The speed of movement from 0 to 1.
 	 * @param motor The speed controller object.
 	 */
-	public LiftControl(Joystick driver, int upButtonID, int downButtonID, double defaultSpeed, SpeedController motor){
+	public LiftControl(Joystick driver, int upButtonID, int downButtonID, double defaultSpeed, SpeedController motor, DigitalInput liftSwitch){
 		this.driver = driver;
 		this.order = null;
 		this.upID = upButtonID;
@@ -36,6 +37,7 @@ public class LiftControl implements Runnable {
 		this.defaultSpeed = Math.abs(defaultSpeed);
 		this.upAxisPositive = false;
 		this.downAxisPositive = false;
+		this.liftSwitch = liftSwitch;
 	}
 	
 	/**
@@ -47,7 +49,7 @@ public class LiftControl implements Runnable {
 	 * @param downAxisPositive Is it using the positive end of the up axis?
 	 * @param motor The speed controller object.
 	 */
-	public LiftControl(Joystick driver, int upAxisID, int downAxisID, boolean upAxisPositive, boolean downAxisPositive, SpeedController motor){
+	public LiftControl(Joystick driver, int upAxisID, int downAxisID, boolean upAxisPositive, boolean downAxisPositive, SpeedController motor, DigitalInput liftSwitch){
 		this.driver = driver;
 		this.order = null;
 		this.upID = upAxisID;
@@ -57,6 +59,7 @@ public class LiftControl implements Runnable {
 		this.motor = motor;
 		this.inputType = "axis";
 		this.defaultSpeed = 0.0;
+		this.liftSwitch = liftSwitch;
 	}
 	
 	/**
@@ -67,7 +70,7 @@ public class LiftControl implements Runnable {
 	 * @param defaultSpeed The speed of movement from 0 to 1.
 	 * @param motor The speed controller object.
 	 */
-	public LiftControl(ExecutiveOrder order, int upButtonID, int downButtonID, double defaultSpeed, SpeedController motor){
+	public LiftControl(ExecutiveOrder order, int upButtonID, int downButtonID, double defaultSpeed, SpeedController motor, DigitalInput liftSwitch){
 		this.driver = null;
 		this.order = order;
 		this.upID = upButtonID;
@@ -82,6 +85,7 @@ public class LiftControl implements Runnable {
 		this.defaultSpeed = Math.abs(defaultSpeed);
 		this.upAxisPositive = false;
 		this.downAxisPositive = false;
+		this.liftSwitch = liftSwitch;
 		
 	}
 	
@@ -94,7 +98,7 @@ public class LiftControl implements Runnable {
 	 * @param downAxisPositive Is it using the positive end of the up axis?
 	 * @param motor The speed controller object.
 	 */
-	public LiftControl(ExecutiveOrder order, int upAxisID, int downAxisID, boolean upAxisPositive, boolean downAxisPositive, SpeedController motor){
+	public LiftControl(ExecutiveOrder order, int upAxisID, int downAxisID, boolean upAxisPositive, boolean downAxisPositive, SpeedController motor, DigitalInput liftSwitch){
 		this.driver = null;
 		this.order = order;
 		this.upID = upAxisID;
@@ -104,6 +108,7 @@ public class LiftControl implements Runnable {
 		this.motor = motor;
 		this.inputType = "axis";
 		this.defaultSpeed = 0.0;
+		this.liftSwitch = liftSwitch;
 	}
 	
 	@Override
@@ -129,10 +134,18 @@ public class LiftControl implements Runnable {
 	private void executiveButtonControl(){
 		while(running){
 			if(getExecutiveButtonPressed(upID) && !getExecutiveButtonPressed(downID)){
-				motor.set(defaultSpeed);
-			}else if(!getExecutiveButtonPressed(upID) && getExecutiveButtonPressed(downID)){
-				motor.set(-defaultSpeed);
+				if(!liftSwitch.get()){
+					motor.set(0.4);
+				}else{
+					motor.set(defaultSpeed);
+				}
 				
+			}else if(!getExecutiveButtonPressed(upID) && getExecutiveButtonPressed(downID)){
+				if(!liftSwitch.get()){
+					motor.set(-0.4);
+				}else{
+					motor.set(-defaultSpeed);
+				}
 			}else{
 				motor.set(0.0);
 			}
@@ -156,13 +169,14 @@ public class LiftControl implements Runnable {
 				currentDriver = order.president;
 			}
 			
-			if(getAxisPressed(upID,currentDriver,upAxisPositive) && !getAxisPressed(downID,currentDriver,downAxisPositive)){
-				motor.set(buffer(upID,currentDriver,0.18,-0.18,true));
-			}else if(!getAxisPressed(upID,currentDriver,upAxisPositive) && getAxisPressed(downID,currentDriver,downAxisPositive)){
-				motor.set(buffer(downID,currentDriver,0.18,-0.18,false));
+			if(!liftSwitch.get()){
+				double value = buffer(upID,currentDriver,0.18,-0.18,true)+buffer(downID,currentDriver,0.18,-0.18,false);
+				motor.set(value*0.4);
 			}else{
-				motor.set(0.0);
+				double value = buffer(upID,currentDriver,0.18,-0.18,true)+buffer(downID,currentDriver,0.18,-0.18,false);
+				motor.set(value);
 			}
+			
 			Timer.delay(0.005);
 		}
 	}
@@ -174,9 +188,17 @@ public class LiftControl implements Runnable {
 	private void buttonControl(){
 		while(running){
 			if(driver.getRawButton(upID) && !driver.getRawButton(downID)){
-				motor.set(defaultSpeed);
+				if(!liftSwitch.get()){
+					motor.set(0.4);
+				}else{
+					motor.set(defaultSpeed);
+				}
 			}else if(!driver.getRawButton(upID) && driver.getRawButton(downID)){
-				motor.set(-defaultSpeed);
+				if(!liftSwitch.get()){
+					motor.set(-0.4);
+				}else{
+					motor.set(-defaultSpeed);
+				}
 			}else{
 				motor.set(0.0);
 			}
@@ -191,14 +213,16 @@ public class LiftControl implements Runnable {
 	 */
 	private void axisControl(){
 		while(running){
-			if(getAxisPressed(upID,driver,upAxisPositive) && !getAxisPressed(downID,driver,downAxisPositive)){
-				motor.set(buffer(upID,driver,0.18,-0.18,true));
-			}else if(!getAxisPressed(upID,driver,upAxisPositive) && getAxisPressed(downID,driver,downAxisPositive)){
-				motor.set(buffer(downID,driver,0.18,-0.18,false));
+		
+			if(!liftSwitch.get()){
+				double value = buffer(upID,driver,0.18,-0.18,true)+buffer(downID,driver,0.18,-0.18,false);
+				motor.set(value*0.4);
 			}else{
-				motor.set(0.0);
+				double value = buffer(upID,driver,0.18,-0.18,true)+buffer(downID,driver,0.18,-0.18,false);
+				motor.set(value);
 			}
-			Timer.delay(0.005);
+			
+		Timer.delay(0.005);
 		}
 	}
 	
@@ -286,10 +310,10 @@ public class LiftControl implements Runnable {
      * @param inverted Is it flipped?
      * @param highMargin The high margin of the buffer.
      * @param lowMargin The low margin of the buffer.
-     * @param scale The amount you want to divide the output by.
+     * @param scale The amount you want to multiply the output by.
      * @return moveOut - The buffered axis data from joystickName.getRawAxis().
      **/
-    private double buffer(int axisNum, Joystick joystickName, boolean inverted, double highMargin, double lowMargin, double scale) {
+    public double buffer(int axisNum, Joystick joystickName, boolean inverted, double highMargin, double lowMargin, double scale) {
         double moveIn = joystickName.getRawAxis(axisNum);
         double moveOut;
         moveOut = 0.0;
@@ -305,12 +329,14 @@ public class LiftControl implements Runnable {
                 moveOut = moveIn;
             }    
         }
-	
-        if(scale <= 1){
+        
+        scale = Math.abs(scale);
+        
+        if(scale >= 1){
             scale = 1;
         }
         
-        moveOut = moveOut/scale;
+        moveOut = moveOut*scale;
         
 	return moveOut;
    }

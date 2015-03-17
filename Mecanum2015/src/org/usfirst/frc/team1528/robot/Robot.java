@@ -56,6 +56,7 @@ public class Robot extends SampleRobot {
     //Thread grabThread;
     
     Talon liftMotor;
+    DigitalInput liftSwitch;
     LiftControl lift;
     Thread liftThread;
     
@@ -70,7 +71,7 @@ public class Robot extends SampleRobot {
     AutonomousManager autoManager;
 
     public Robot() {
-        myDrive = new RobotDrive(0,1,3,2);
+        myDrive = new RobotDrive(4,0,5,2);
         moveStick = new Joystick(0);
         shootStick = new Joystick(1);
         
@@ -82,14 +83,14 @@ public class Robot extends SampleRobot {
         //brakeIn = new Solenoid(2);
         
         
-        liftMotor = new Talon(4);
-        
+        liftMotor = new Talon(3);
+        liftSwitch = new DigitalInput(0);
         
         
         autoChooser = new SendableChooser();
         autoChooser.addDefault("Auto Forward", new Integer(1));
-        autoChooser.addObject("Auto Sideways", new Integer(2));
-        autoChooser.addObject("Auto Twist", new Integer(3));
+        autoChooser.addObject("Auto Right Sideways", new Integer(2));
+        autoChooser.addObject("Auto Left Sideways", new Integer(3));
         autoChooser.addObject("Advanced", new Integer(4));
         
         teleChooser = new SendableChooser();
@@ -101,8 +102,9 @@ public class Robot extends SampleRobot {
         
         SmartDashboard.putData("Autonomous Chooser", autoChooser);
         SmartDashboard.putData("TeleOp Chooser", teleChooser);
-        SmartDashboard.putNumber("Scale Down Factor", 1);
-        SmartDashboard.putNumber("Default Lift Speed", 0.5);
+        SmartDashboard.putNumber("Scale Factor", 0.4);
+        SmartDashboard.putNumber("Auto Scale Factor", 1.0);
+        SmartDashboard.putNumber("Default Lift Speed", 1.0);
         
         SmartDashboard.putBoolean("Add Step 0", false);
         
@@ -118,9 +120,9 @@ public class Robot extends SampleRobot {
     public void autonomous() {
     	autonomousID = (Integer)autoChooser.getSelected();
     	
-    	double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
+    	double scale = Math.abs(SmartDashboard.getNumber("Auto Scale Factor", 1.0));
     	
-    	if(scale <= 1){
+    	if(scale >= 1){
             scale = 1;
         }
     	
@@ -142,40 +144,50 @@ public class Robot extends SampleRobot {
     
     /**
      * Forward driving.
-     * @param scale The amount to divide the speed by.
+     * @param scale The amount to multiply the speed by.
      */
     public void autonomous1(double scale){
         myDrive.setSafetyEnabled(false);
         
-        myDrive.mecanumDrive_Cartesian(0.0,1.0/scale,0.0,0.0);
-        Timer.delay(1.5);
+        liftMotor.set(1.0);
+        Timer.delay(0.5);
+        liftMotor.set(0.0);
+        myDrive.mecanumDrive_Cartesian(0.0,1.0*scale,0.0,0.0);
+        Timer.delay(1.0);
         myDrive.mecanumDrive_Cartesian(0.0,0.0,0.0,0.0);
         
     }
     
     /**
-     * Sideways driving.
-     * @param scale The amount to divide the speed by.
+     * Right Sideways driving.
+     * @param scale The amount to multiply the speed by.
      */
     public void autonomous2(double scale){
         myDrive.setSafetyEnabled(false);
        
-        myDrive.mecanumDrive_Cartesian(1.0/scale,0.0,0.0,0.0);
-        Timer.delay(1.5);
+        liftMotor.set(1.0*scale);
+        Timer.delay(0.5);
+        liftMotor.set(0.0);
+        myDrive.mecanumDrive_Cartesian(1.0*scale,0.0,0.0,0.0);
+        Timer.delay(2.0);
         myDrive.mecanumDrive_Cartesian(0.0,0.0,0.0,0.0);
         
     }
     
     /**
-     * Rotation in place.
-     * @param scale The amount to divide the speed by.
+     * Left sideways driving.
+     * @param scale The amount to multiply the speed by.
      */
     public void autonomous3(double scale){
         myDrive.setSafetyEnabled(false);
        
-        myDrive.mecanumDrive_Cartesian(0.0,0.0,1.0/scale,0.0);
-        Timer.delay(1.5);
+        liftMotor.set(1.0/scale);
+        Timer.delay(0.5);
+        liftMotor.set(0.0);
+        myDrive.mecanumDrive_Cartesian(-1.0*scale,0.0,0.0,0.0);
+        Timer.delay(2.0);
         myDrive.mecanumDrive_Cartesian(0.0,0.0,0.0,0.0);
+        
         
     }
 
@@ -192,13 +204,12 @@ public class Robot extends SampleRobot {
         myDrive.setSafetyEnabled(true);
         teleID = (Integer)teleChooser.getSelected();
         
-        double scale = SmartDashboard.getNumber("Scale Down Factor", 1);
-        double liftSpeed = SmartDashboard.getNumber("Default Lift Speed", 0.5);
-        
+        double liftSpeed = SmartDashboard.getNumber("Default Lift Speed", 1.0);
         liftSpeed = Math.abs(liftSpeed);
-        
-        if(liftSpeed > 1){
-        	liftSpeed = 1;
+        double scale = Math.abs(SmartDashboard.getNumber("Scale Factor", 0.4));
+    	
+    	if(scale >= 1){
+            scale = 1;
         }
         
         switch(teleID.intValue()) {
@@ -224,7 +235,7 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(shootStick,LEFT_BUMPER,RIGHT_BUMPER,liftSpeed,liftMotor);
+        lift = new LiftControl(shootStick,LEFT_TRIGGER_AXIS,RIGHT_TRIGGER_AXIS,true,true,liftMotor,liftSwitch);
         liftThread = new Thread(lift);
         liftThread.start();
         
@@ -261,7 +272,7 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,liftSpeed,liftMotor);
+        lift = new LiftControl(control,LEFT_TRIGGER_AXIS,RIGHT_TRIGGER_AXIS,true,true,liftMotor,liftSwitch);
         liftThread = new Thread(lift);
         liftThread.start();
         
@@ -304,7 +315,7 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(control,LEFT_BUMPER,RIGHT_BUMPER,liftSpeed,liftMotor);
+        lift = new LiftControl(control,LEFT_TRIGGER_AXIS,RIGHT_TRIGGER_AXIS,true,true,liftMotor,liftSwitch);
         liftThread = new Thread(lift);
         liftThread.start();
         
@@ -431,7 +442,7 @@ public class Robot extends SampleRobot {
      * @param inverted Is it flipped?
      * @param highMargin The high margin of the buffer.
      * @param lowMargin The low margin of the buffer.
-     * @param scale The amount you want to divide the output by.
+     * @param scale The amount you want to multiply the output by.
      * @return moveOut - The buffered axis data from joystickName.getRawAxis().
      **/
     public double buffer(int axisNum, Joystick joystickName, boolean inverted, double highMargin, double lowMargin, double scale) {
@@ -450,12 +461,14 @@ public class Robot extends SampleRobot {
                 moveOut = moveIn;
             }    
         }
-	
-        if(scale <= 1){
+        
+        scale = Math.abs(scale);
+        
+        if(scale >= 1){
             scale = 1;
         }
         
-        moveOut = moveOut/scale;
+        moveOut = moveOut*scale;
         
 	return moveOut;
    }
