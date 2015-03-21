@@ -51,9 +51,6 @@ public class Robot extends SampleRobot {
     ExecutiveRelease release;
     Thread releaseThread;
 
-    //Solenoid grabberOut, grabberIn, brakeOut, brakeIn;
-    //SolenoidClick grabPiston; 
-    //Thread grabThread;
     
     Talon liftMotor;
     DigitalInput liftSwitch;
@@ -77,11 +74,6 @@ public class Robot extends SampleRobot {
         
         control = new ExecutiveOrder(moveStick,shootStick,Y_BUTTON);
         release = new ExecutiveRelease(control);
-        
-        
-        //brakeOut = new Solenoid(1);
-        //brakeIn = new Solenoid(2);
-        
         
         liftMotor = new Talon(3);
         liftSwitch = new DigitalInput(0);
@@ -235,13 +227,9 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(shootStick,LEFT_TRIGGER_AXIS,RIGHT_TRIGGER_AXIS,true,true,liftMotor,liftSwitch);
+        lift = new LiftControl(shootStick,LEFT_TRIGGER_AXIS,RIGHT_TRIGGER_AXIS,liftMotor,liftSwitch);
         liftThread = new Thread(lift);
         liftThread.start();
-        
-        //brakeOut.set(true);
-        //brakeIn.set(false);
-        
         
         while (isOperatorControl() && isEnabled()) {
             myDrive.setSafetyEnabled(true);
@@ -250,7 +238,6 @@ public class Robot extends SampleRobot {
             double yMovement = buffer(LEFT_Y_AXIS,moveStick,inverted,0.18,-0.18,scale);
             double twist = buffer(RIGHT_X_AXIS,moveStick,true,0.18,-0.18,scale);
             myDrive.mecanumDrive_Cartesian(xMovement, yMovement, twist, 0.0);
-            
             
             Timer.delay(0.01);
         }
@@ -272,15 +259,9 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(control,LEFT_TRIGGER_AXIS,RIGHT_TRIGGER_AXIS,true,true,liftMotor,liftSwitch);
+        lift = new LiftControl(control,LEFT_TRIGGER_AXIS,RIGHT_TRIGGER_AXIS,liftMotor,liftSwitch);
         liftThread = new Thread(lift);
         liftThread.start();
-        
-        //brakeOut.set(true);
-        //brakeIn.set(false);
-        
-        
-        
         
         while (isOperatorControl() && isEnabled()) {
             myDrive.setSafetyEnabled(true);
@@ -292,7 +273,6 @@ public class Robot extends SampleRobot {
             double yMovement = buffer(LEFT_Y_AXIS,moveStick,inverted,0.18,-0.18,scale);
             double twist = buffer(RIGHT_X_AXIS,moveStick,true,0.18,-0.18,scale);
             myDrive.mecanumDrive_Cartesian(xMovement, yMovement, twist, 0.0);
-            
             
             Timer.delay(0.01);
         }
@@ -315,13 +295,9 @@ public class Robot extends SampleRobot {
         orientationThread = new Thread(orientationSwitcher);
         orientationThread.start();
         
-        lift = new LiftControl(control,LEFT_TRIGGER_AXIS,RIGHT_TRIGGER_AXIS,true,true,liftMotor,liftSwitch);
+        lift = new LiftControl(control,LEFT_TRIGGER_AXIS,RIGHT_TRIGGER_AXIS,liftMotor,liftSwitch);
         liftThread = new Thread(lift);
         liftThread.start();
-        
-        //brakeOut.set(true);
-        //brakeIn.set(false);
-        
         
         while (isOperatorControl() && isEnabled()) {
             myDrive.setSafetyEnabled(true); 
@@ -340,7 +316,6 @@ public class Robot extends SampleRobot {
             double yMovement = buffer(LEFT_Y_AXIS,currentDriver,inverted,0.18,-0.18,scale);
             double twist = buffer(RIGHT_X_AXIS,currentDriver,true,0.18,-0.18,scale);
             myDrive.mecanumDrive_Cartesian(xMovement, yMovement, twist, 0.0);
-            
             
             Timer.delay(0.01);
         }

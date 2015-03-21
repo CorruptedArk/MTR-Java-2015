@@ -6,8 +6,7 @@ public class LiftControl implements Runnable {
 
 	private boolean running;
 	private final Joystick driver;
-	private final int upID, downID;
-	private final boolean upAxisPositive, downAxisPositive;
+	private final int upID, downID, axisID;
 	private final SpeedController motor;
 	private final String inputType;
 	private final double defaultSpeed;
@@ -21,12 +20,14 @@ public class LiftControl implements Runnable {
 	 * @param downButtonID The ID of the down button.
 	 * @param defaultSpeed The speed of movement from 0 to 1.
 	 * @param motor The speed controller object.
+	 * @param liftSwitch The switch at the top of the lift.
 	 */
 	public LiftControl(Joystick driver, int upButtonID, int downButtonID, double defaultSpeed, SpeedController motor, DigitalInput liftSwitch){
 		this.driver = driver;
 		this.order = null;
 		this.upID = upButtonID;
 		this.downID = downButtonID;
+		this.axisID = -1;
 		this.motor = motor;
 		this.inputType = "button";
 		if(defaultSpeed < -1){
@@ -35,29 +36,25 @@ public class LiftControl implements Runnable {
 			defaultSpeed = 1;
 		}
 		this.defaultSpeed = Math.abs(defaultSpeed);
-		this.upAxisPositive = false;
-		this.downAxisPositive = false;
 		this.liftSwitch = liftSwitch;
 	}
 	
 	/**
-	 * Constructor. Uses axes and a single operator.
+	 * Constructor. Uses triggers and a single operator.
 	 * @param driver The operator's joystick.
 	 * @param upAxisID The ID of the up axis.
 	 * @param downAxisID The ID of the down axis.
-	 * @param upAxisPostive Is it using the positive end of the up axis?
-	 * @param downAxisPositive Is it using the positive end of the up axis?
 	 * @param motor The speed controller object.
+	 * @param liftSwitch The switch at the top of the lift.
 	 */
-	public LiftControl(Joystick driver, int upAxisID, int downAxisID, boolean upAxisPositive, boolean downAxisPositive, SpeedController motor, DigitalInput liftSwitch){
+	public LiftControl(Joystick driver, int upAxisID, int downAxisID, SpeedController motor, DigitalInput liftSwitch){
 		this.driver = driver;
 		this.order = null;
 		this.upID = upAxisID;
 		this.downID = downAxisID;
-		this.upAxisPositive = upAxisPositive;
-		this.downAxisPositive = downAxisPositive;
+		this.axisID = -1;
 		this.motor = motor;
-		this.inputType = "axis";
+		this.inputType = "triggers";
 		this.defaultSpeed = 0.0;
 		this.liftSwitch = liftSwitch;
 	}
@@ -69,12 +66,14 @@ public class LiftControl implements Runnable {
 	 * @param downButtonID The ID of the down button.
 	 * @param defaultSpeed The speed of movement from 0 to 1.
 	 * @param motor The speed controller object.
+	 * @param liftSwitch The switch at the top of the lift.
 	 */
 	public LiftControl(ExecutiveOrder order, int upButtonID, int downButtonID, double defaultSpeed, SpeedController motor, DigitalInput liftSwitch){
 		this.driver = null;
 		this.order = order;
 		this.upID = upButtonID;
 		this.downID = downButtonID;
+		this.axisID = -1;
 		this.motor = motor;
 		this.inputType = "button";
 		if(defaultSpeed < -1){
@@ -83,28 +82,62 @@ public class LiftControl implements Runnable {
 			defaultSpeed = 1;
 		}
 		this.defaultSpeed = Math.abs(defaultSpeed);
-		this.upAxisPositive = false;
-		this.downAxisPositive = false;
 		this.liftSwitch = liftSwitch;
 		
 	}
 	
 	/**
-	 * Constructor. Uses axes and an ExecutiveOrder.
+	 * Constructor. Uses triggers and an ExecutiveOrder.
 	 * @param order The ExecutiveOrder of two operators.
 	 * @param upAxisID The ID of the up axis.
 	 * @param downAxisID The ID of the down axis.
-	 * @param upAxisPostive Is it using the positive end of the up axis?
-	 * @param downAxisPositive Is it using the positive end of the up axis?
 	 * @param motor The speed controller object.
+	 * @param liftSwitch The switch at the top of the lift.
 	 */
-	public LiftControl(ExecutiveOrder order, int upAxisID, int downAxisID, boolean upAxisPositive, boolean downAxisPositive, SpeedController motor, DigitalInput liftSwitch){
+	public LiftControl(ExecutiveOrder order, int upAxisID, int downAxisID, SpeedController motor, DigitalInput liftSwitch){
 		this.driver = null;
 		this.order = order;
 		this.upID = upAxisID;
 		this.downID = downAxisID;
-		this.upAxisPositive = upAxisPositive;
-		this.downAxisPositive = downAxisPositive;
+		this.axisID = -1;
+		this.motor = motor;
+		this.inputType = "triggers";
+		this.defaultSpeed = 0.0;
+		this.liftSwitch = liftSwitch;
+	}
+	
+	/**
+	 * Constructor. Uses an axis and a Joystick.
+	 * @param @param driver The operator's joystick.
+	 * @param axisID The ID id the axis.
+	 * @param motor The speed controller object.
+	 * @param liftSwitch The switch at the top of the lift.
+	 */
+	public LiftControl(Joystick driver, int axisID, SpeedController motor, DigitalInput liftSwitch){
+		this.driver = driver;
+		this.order = null;
+		this.upID = -1;
+		this.downID = -1;
+		this.axisID = axisID;
+		this.motor = motor;
+		this.inputType = "axis";
+		this.defaultSpeed = 0.0;
+		this.liftSwitch = liftSwitch;
+	}
+	
+	/**
+	 * Constructor. Uses an axis and an ExecutiveOrder.
+	 * @param order The ExecutiveOrder of two operators.
+	 * @param axisID The ID id the axis.
+	 * @param motor The speed controller object.
+	 * @param liftSwitch The switch at the top of the lift.
+	 */
+	public LiftControl(ExecutiveOrder order, int axisID, SpeedController motor, DigitalInput liftSwitch){
+		this.driver = null;
+		this.order = order;
+		this.upID = -1;
+		this.downID = -1;
+		this.axisID = axisID;
 		this.motor = motor;
 		this.inputType = "axis";
 		this.defaultSpeed = 0.0;
@@ -116,12 +149,16 @@ public class LiftControl implements Runnable {
 		running = true;
 		if(order != null && inputType.equalsIgnoreCase("button")){
 			executiveButtonControl();
-		}else if(order != null && inputType.equalsIgnoreCase("axis")){
-			executiveAxisControl();
+		}else if(order != null && inputType.equalsIgnoreCase("triggers")){
+			executiveTriggersControl();
 		}else if(driver != null && inputType.equalsIgnoreCase("button")){
 			buttonControl();
+		}else if(driver != null && inputType.equalsIgnoreCase("triggers")){
+			triggersControl();
 		}else if(driver != null && inputType.equalsIgnoreCase("axis")){
 			axisControl();
+		}else if(order != null && inputType.equalsIgnoreCase("axis")){
+			executiveAxisControl();
 		}else{
 			throw new IllegalArgumentException("Something was invalid.");
 		}
@@ -158,7 +195,7 @@ public class LiftControl implements Runnable {
 	/**
 	 * Controls the lift with axes and an ExecutiveOrder.
 	 */
-	private void executiveAxisControl(){
+	private void executiveTriggersControl(){
 		
 		while(running){
 			Joystick currentDriver;
@@ -211,7 +248,7 @@ public class LiftControl implements Runnable {
 	/**
 	 * Controls lift with axes and a single driver.
 	 */
-	private void axisControl(){
+	private void triggersControl(){
 		while(running){
 		
 			if(!liftSwitch.get()){
@@ -223,6 +260,49 @@ public class LiftControl implements Runnable {
 			}
 			
 		Timer.delay(0.005);
+		}
+	}
+	
+	/**
+	 * Controls lift with an axis and a single Joystick.
+	 */
+	private void axisControl(){
+		while(running){
+			
+			if(!liftSwitch.get()){
+				double value = buffer(axisID,driver,true,0.18,-0.18);
+				motor.set(value*0.4);
+			}else{
+				double value = buffer(axisID,driver,true,0.18,-0.18);
+				motor.set(value);
+			}
+			
+		Timer.delay(0.005);
+		}
+	}
+	
+	/**
+	 * Controls lift with an axis and an ExecutiveOrder.
+	 */
+	private void executiveAxisControl(){
+		while(running){
+			Joystick currentDriver;
+			
+			if(order.getReleaseState()){
+				currentDriver = order.congress;
+			}else{
+				currentDriver = order.president;
+			}
+			
+			if(!liftSwitch.get()){
+				double value = buffer(axisID,currentDriver,true,0.18,-0.18);
+				motor.set(value*0.4);
+			}else{
+				double value = buffer(axisID,currentDriver,true,0.18,-0.18);
+				motor.set(value);
+			}
+			
+			Timer.delay(0.005);
 		}
 	}
 	
@@ -253,25 +333,7 @@ public class LiftControl implements Runnable {
         
         return pressed;
     }
-    /**
-     * Checks if axis is pressed.
-     * @param id ID of the axis 
-     * @param currentDriver The current driver.
-     * @param axisPositive Does the axis use the positive end?
-     * @return Whether or not the axis is pressed.
-     */
-    private boolean getAxisPressed(int id, Joystick currentDriver, boolean axisPositive){
-    	boolean pressed;
-    	if(buffer(id,driver,true,0.18,-0.18) > 0.0 == axisPositive){
-    		pressed = true;
-    	}else if(buffer(id,driver,true,0.18,-0.18) < 0.0 == !axisPositive){
-    		pressed = true;
-    	}else{
-    		pressed = false;
-    	}
-    	
-    	return pressed;
-    }
+    
 	
 	/**
      * This function buffers Joystick.getRawAxis() input.
@@ -345,9 +407,9 @@ public class LiftControl implements Runnable {
      * This function buffers Joystick.getRawAxis() input.
      * @param axisNum The ID for the axis of a Joystick.
      * @param joystickName The Joystick that input is coming from. 
-     * @param isPositive Is it positive?
      * @param highMargin The high margin of the buffer.
      * @param lowMargin The low margin of the buffer.
+     * @param isPositive Set true for positive absolute value, set false for negative absolute value. 
      * @return moveOut - The buffered axis data from joystickName.getRawAxis().
      **/
     private double buffer(int axisNum, Joystick joystickName, double highMargin, double lowMargin, boolean isPositive) {
