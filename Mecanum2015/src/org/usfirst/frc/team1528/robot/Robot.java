@@ -80,10 +80,10 @@ public class Robot extends SampleRobot {
         
         
         autoChooser = new SendableChooser();
-        autoChooser.addDefault("Auto Forward", new Integer(1));
-        autoChooser.addObject("Auto Right Sideways", new Integer(2));
-        autoChooser.addObject("Auto Left Sideways", new Integer(3));
-        autoChooser.addObject("Advanced", new Integer(4));
+        autoChooser.addDefault("Auto Forward", new Integer(0));
+        autoChooser.addObject("Auto Right Sideways", new Integer(1));
+        autoChooser.addObject("Auto Left Sideways", new Integer(2));
+        autoChooser.addObject("Advanced", new Integer(3));
         
         teleChooser = new SendableChooser();
         teleChooser.addDefault("Default", new Integer(0));
@@ -119,6 +119,9 @@ public class Robot extends SampleRobot {
         }
     	
         switch(autonomousID.intValue()) {
+            case 0:
+                autonomous0(scale);
+                break;
             case 1:
                 autonomous1(scale);
                 break;
@@ -126,10 +129,7 @@ public class Robot extends SampleRobot {
                 autonomous2(scale);
                 break;
             case 3:
-                autonomous3(scale);
-                break;
-            case 4:
-            	autonomous4();
+            	autonomous3();
             	break;
         }
     }
@@ -138,7 +138,7 @@ public class Robot extends SampleRobot {
      * Forward driving.
      * @param scale The amount to multiply the speed by.
      */
-    public void autonomous1(double scale){
+    public void autonomous0(double scale){
         myDrive.setSafetyEnabled(false);
         
         liftMotor.set(1.0);
@@ -154,7 +154,7 @@ public class Robot extends SampleRobot {
      * Right Sideways driving.
      * @param scale The amount to multiply the speed by.
      */
-    public void autonomous2(double scale){
+    public void autonomous1(double scale){
         myDrive.setSafetyEnabled(false);
        
         liftMotor.set(1.0*scale);
@@ -170,7 +170,7 @@ public class Robot extends SampleRobot {
      * Left sideways driving.
      * @param scale The amount to multiply the speed by.
      */
-    public void autonomous3(double scale){
+    public void autonomous2(double scale){
         myDrive.setSafetyEnabled(false);
        
         liftMotor.set(1.0/scale);
@@ -186,7 +186,7 @@ public class Robot extends SampleRobot {
     /**
      * Advanced autonomous. Allows user to define steps without needing to recompile code.
      */
-    public void autonomous4(){
+    public void autonomous3(){
     	autoManager.performAllActions();
     }
     /**
