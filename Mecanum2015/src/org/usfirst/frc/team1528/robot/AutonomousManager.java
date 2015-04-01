@@ -13,33 +13,18 @@ public class AutonomousManager {
 	ArrayList<AutoAction> actionList = new ArrayList<AutoAction>();
 	RobotDrive drive;
 	SpeedController liftMotor;
-	Solenoid brakeOut, brakeIn;
 	
 	/**
 	 * Constructor. 
 	 * @param drive The RobotDrive controlling the robot movement.
 	 * @param liftMotor The motor controlling the lift of the robot.
-	 * @param brakeOut The solenoid the extends the brake.
-	 * @param brakeIn The solenoid the retracts the brake.
-	 */
-	public AutonomousManager(RobotDrive drive, SpeedController liftMotor, Solenoid brakeOut, Solenoid brakeIn){
-		this.drive = drive;
-		this.liftMotor = liftMotor;
-		this.brakeOut = brakeOut;
-		this.brakeIn = brakeIn;
-	}
-	
-	/**
-	 * Constructor. No brake.
-	 * @param drive
-	 * @param liftMotor
 	 */
 	public AutonomousManager(RobotDrive drive, SpeedController liftMotor){
 		this.drive = drive;
 		this.liftMotor = liftMotor;
-		this.brakeIn = null;
-		this.brakeOut = null;
 	}
+	
+	
 	
 	/**
 	 * Adds an AutoAction to the action list. Uses the raw parameters.
@@ -65,29 +50,12 @@ public class AutonomousManager {
      * Makes the robot perform all actions consecutively.
      */
 	public void performAllActions(){
-		if(brakeIn == null && brakeOut == null){
-			drive.setSafetyEnabled(false);
-			for(int i = 0; i < actionList.size(); i++){
-				AutoAction action = actionList.get(i);
-				drive.mecanumDrive_Cartesian(action.xMovement, action.yMovement, action.twist, 0.0);
-				liftMotor.set(action.motorSpeed);
-				Timer.delay(action.time);
-			}
-		}else{
-			drive.setSafetyEnabled(false);
-			for(int i = 0; i < actionList.size(); i++){
-				AutoAction action = actionList.get(i);
-				drive.mecanumDrive_Cartesian(action.xMovement, action.yMovement, action.twist, 0.0);
-				if(action.motorSpeed == 0.0 ){
-					brakeOut.set(true);
-					brakeIn.set(false);
-				}else{
-					brakeOut.set(false);
-					brakeIn.set(true);
-				}
-				liftMotor.set(action.motorSpeed);
-				Timer.delay(action.time);
-			}
+		drive.setSafetyEnabled(false);
+		for(int i = 0; i < actionList.size(); i++){
+			AutoAction action = actionList.get(i);
+			drive.mecanumDrive_Cartesian(action.xMovement, action.yMovement, action.twist, 0.0);
+			liftMotor.set(action.motorSpeed);
+			Timer.delay(action.time);
 		}
 	}
 	
