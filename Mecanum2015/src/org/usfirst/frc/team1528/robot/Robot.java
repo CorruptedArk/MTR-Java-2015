@@ -368,7 +368,7 @@ public class Robot extends SampleRobot {
     			}
     		}
     		SmartDashboard.putBoolean("Advanced Auto Is Updating", false);
-    		Timer.delay(10.0);
+    		Timer.delay(0.01);
     		
     	}
     	SmartDashboard.putBoolean("Advanced Auto Is Updating", false);		
