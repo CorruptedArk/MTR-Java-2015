@@ -219,7 +219,7 @@ public class Robot extends SampleRobot {
     
     /**
      * Normal teleOp, doesn't use an ExecutiveOrder.
-     * @param scale The amount to divide the speed by.
+     * @param scale The amount to multiply the speed by.
      * @param liftSpeed The speed of the lift if buttons are used to control it.
      */
     public void teleOpLoop0(double scale, double liftSpeed){
@@ -248,7 +248,7 @@ public class Robot extends SampleRobot {
     
     /**
      * Restricted teleOp, only uses ExecutiveOrder to override accessories.
-     * @param scale The amount to divide the speed by.
+     * @param scale The amount to multiply the speed by.
      * @param liftSpeed The speed of the lift if buttons are used to control it.
      */
     public void teleOpLoop1(double scale, double liftSpeed) {
@@ -284,7 +284,7 @@ public class Robot extends SampleRobot {
     
     /**
      * Guest teleOp, uses ExecutiveOrder for full system.
-     * @param scale The amount to divide the speed by.
+     * @param scale The amount to multiply the speed by.
      * @param liftSpeed The speed of the lift if buttons are used to control it.
      */
     public void teleOpLoop2(double scale, double liftSpeed) { 
