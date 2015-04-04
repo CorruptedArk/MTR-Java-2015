@@ -86,8 +86,8 @@ public class Robot extends SampleRobot {
         autoChooser.addObject("Advanced", new Integer(3));
         
         teleChooser = new SendableChooser();
-        teleChooser.addDefault("Default", new Integer(0));
-        teleChooser.addObject("Secondary", new Integer(1));
+        teleChooser.addDefault("Default", new Integer(1));
+        teleChooser.addObject("Secondary", new Integer(0));
         teleChooser.addObject("Guest Driver", new Integer(2));
         
         autoManager = new AutonomousManager(myDrive, liftMotor);
@@ -145,7 +145,7 @@ public class Robot extends SampleRobot {
         Timer.delay(0.5);
         liftMotor.set(0.0);
         myDrive.mecanumDrive_Cartesian(0.0,1.0*scale,0.0,0.0);
-        Timer.delay(1.0);
+        Timer.delay(0.8);
         myDrive.mecanumDrive_Cartesian(0.0,0.0,0.0,0.0);
         
     }
@@ -161,7 +161,7 @@ public class Robot extends SampleRobot {
         Timer.delay(0.5);
         liftMotor.set(0.0);
         myDrive.mecanumDrive_Cartesian(1.0*scale,0.0,0.0,0.0);
-        Timer.delay(2.0);
+        Timer.delay(0.8);
         myDrive.mecanumDrive_Cartesian(0.0,0.0,0.0,0.0);
         
     }
@@ -177,7 +177,7 @@ public class Robot extends SampleRobot {
         Timer.delay(0.5);
         liftMotor.set(0.0);
         myDrive.mecanumDrive_Cartesian(-1.0*scale,0.0,0.0,0.0);
-        Timer.delay(2.0);
+        Timer.delay(0.8);
         myDrive.mecanumDrive_Cartesian(0.0,0.0,0.0,0.0);
         
         
