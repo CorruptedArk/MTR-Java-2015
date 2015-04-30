@@ -361,7 +361,7 @@ public class LiftControl implements Runnable {
             }    
         }
 	
-	return moveOut;
+        return moveOut;
    }
    
     
@@ -400,7 +400,7 @@ public class LiftControl implements Runnable {
         
         moveOut = moveOut*scale;
         
-	return moveOut;
+        return moveOut;
    }
     
     /**
@@ -429,7 +429,7 @@ public class LiftControl implements Runnable {
             }    
         }
 	
-	return moveOut;
+        return moveOut;
    }
 
 }

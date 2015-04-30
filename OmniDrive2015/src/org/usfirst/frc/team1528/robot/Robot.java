@@ -379,7 +379,7 @@ public class Robot extends SampleRobot {
             }    
         }
 	
-	return moveOut;
+        return moveOut;
    }
    
     
@@ -416,7 +416,7 @@ public class Robot extends SampleRobot {
         
         moveOut = moveOut*scale;
         
-	return moveOut;
+        return moveOut;
    }
     
     /**
