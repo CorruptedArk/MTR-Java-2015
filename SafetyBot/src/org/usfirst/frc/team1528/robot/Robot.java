@@ -25,6 +25,7 @@ public class Robot extends SampleRobot {
     Joystick safteyController;
     Talon safteyMotor;
     DigitalInput safteySwitch;
+    DoubleSolenoid safetyPiston;
     
   //Constants for Buttons
     static final int A_BUTTON = 1;
@@ -53,18 +54,22 @@ public class Robot extends SampleRobot {
         safteyController = new Joystick(0);
         safteyMotor = new Talon(3);
         safteySwitch = new DigitalInput(0);
+        safetyPiston = new DoubleSolenoid(0,1);
     } 
 
     
     public void autonomous() {
-       safteyMotor.set(1.0);
+    	safteyMotor.set(1.0);
        	Timer.delay(0.5);
        	safteyMotor.set(0.0);
     	safetyDrive.setSafetyEnabled(false);
         safetyDrive.mecanumDrive_Cartesian(0.0, 1.0, 0.0, 0.0);
         Timer.delay(0.8);
         safetyDrive.mecanumDrive_Cartesian(0.0, 0.0, 0.0, 0.0);
-        		
+        safetyPiston.set(DoubleSolenoid.Value.kForward);
+        Timer.delay(5.0);
+        safetyPiston.set(DoubleSolenoid.Value.kReverse);
+        
         	
         	
     }
@@ -92,16 +97,18 @@ public class Robot extends SampleRobot {
     				safteyMotor.set(-1.0);
     			}
     		}
-    			
-    			
-    			
-    			
-    	}
     		
-    		
-    		
+    		if(safteyController.getRawButton(A_BUTTON) && !safteyController.getRawButton(B_BUTTON)){
+    			if(!safetyPiston.set()){
+    				
+    			}
+    		}
+    				
     		Timer.delay(0.01);
     	}
+    		
+    		
+    }
     	
     
 
@@ -110,8 +117,14 @@ public class Robot extends SampleRobot {
      */
     public void test() {
     	
+
     	
     }
+
+   
+    
+    
+    
     
     /**
      * This function buffers Joystick.getRawAxis() input.
