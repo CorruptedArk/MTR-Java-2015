@@ -3,7 +3,7 @@ package org.usfirst.frc.team1528.robot;
 
 
 import edu.wpi.first.wpilibj.*;
-
+import edu.wpi.first.wpilibj.Relay;
 /**
  * This is a demo program showing the use of the RobotDrive class.
  * The SampleRobot class is the base of a robot application that will automatically call your
@@ -21,12 +21,12 @@ import edu.wpi.first.wpilibj.*;
  * this system. Use IterativeRobot or Command-Based instead if you're new.
  */
 public class Robot extends SampleRobot {
-    RobotDrive safetyDrive;
+    RobotDrive safteyDrive;
     Joystick safteyController;
-    Talon safteyMotor;
+    Talon safteyMotor, safteyMotor2;
     DigitalInput safteySwitch;
-    DoubleSolenoid safetyPiston;
-    
+    DoubleSolenoid safetyPiston,piston;
+    Relay safetyRelay;
   //Constants for Buttons
     static final int A_BUTTON = 1;
     static final int B_BUTTON = 2;
@@ -50,60 +50,62 @@ public class Robot extends SampleRobot {
     
     
     public Robot() {
-        safetyDrive = new RobotDrive(0,1,2,3);
+        safteyDrive = new RobotDrive(0,1,2,3);
         safteyController = new Joystick(0);
-        safteyMotor = new Talon(3);
         safteySwitch = new DigitalInput(0);
         safetyPiston = new DoubleSolenoid(0,1);
+        safetyRelay = new Relay(0);
+        safteyMotor2 = new Talon(5);
+        safteyMotor = new Talon(4);
     } 
 
     
     public void autonomous() {
-    	safteyMotor.set(1.0);
-       	Timer.delay(0.5);
-       	safteyMotor.set(0.0);
-    	safetyDrive.setSafetyEnabled(false);
-        safetyDrive.mecanumDrive_Cartesian(0.0, 1.0, 0.0, 0.0);
-        Timer.delay(0.8);
-        safetyDrive.mecanumDrive_Cartesian(0.0, 0.0, 0.0, 0.0);
-        safetyPiston.set(DoubleSolenoid.Value.kForward);
-        Timer.delay(5.0);
-        safetyPiston.set(DoubleSolenoid.Value.kReverse);
+    	/*
+    	safteyDrive.mecanumDrive_Cartesian(1 , 0, 1, 00);
+        Timer.delay(666);  */
         
-        	
-        	
     }
 
     
     public void operatorControl() {
     	while(isOperatorControl() && isEnabled()){
-    		safetyDrive.setSafetyEnabled(true);
+    	
+    		safteyMotor.setSafetyEnabled(true);
+    		safteyMotor2.setSafetyEnabled(true);
+    		
+    		
+    		
+    		
+    		safteyDrive.setSafetyEnabled(true);
     		double x = buffer(LEFT_X_AXIS,safteyController,true,0.18,-0.18);
     		double y = buffer(LEFT_Y_AXIS, safteyController,true,0.18,-0.18);
     		double r = buffer(RIGHT_X_AXIS, safteyController,true,0.18, -0.18);
-    		safetyDrive.mecanumDrive_Cartesian(x, y, r, 0.0);
+    		safteyDrive.mecanumDrive_Cartesian(x, y, r, 0.0);
     		
+    		safteyMotor.set(buffer(LEFT_TRIGGER_AXIS,safteyController,true,0.18,-0.18));
+    		safteyMotor2.set(buffer(RIGHT_TRIGGER_AXIS,safteyController,true,0.18,-0.18));
     		
-    		if(safteyController.getRawButton(LEFT_BUMPER) && !safteyController.getRawButton(RIGHT_BUMPER)){
-    			if(!safteySwitch.get()){
-    				safteyMotor.set(0.4);	
-    			}else {
-    				safteyMotor.set(1.0);
-    			}
-    		}else if(!safteyController.getRawButton(LEFT_BUMPER) && safteyController.getRawButton(RIGHT_BUMPER)){
-    			if(!safteySwitch.get()){
-    				safteyMotor.set(-0.4);	
-    			}else {
-    				safteyMotor.set(-1.0);
-    			}
+    		/*if(safteyController.getRawButton(B_BUTTON)){
+    			safteyDrive.mecanumDrive_Cartesian(0, 0, 1.0, 0);
+    			Timer.delay(5.0);
+    			safteyDrive.mecanumDrive_Cartesian(0, 0, 0, 0);	
+    		}
+    			
+    		if(!safteySwitch.get()){
+    			safteyMotor.set(buffer(RIGHT_Y_AXIS, safteyController,true,0.18, -0.18)*.4000000000);
+    		}else{
+    			safteyMotor.set(buffer(RIGHT_X_AXIS, safteyController,true,0.18, -0.18)*1.00);
     		}
     		
-    		if(safteyController.getRawButton(A_BUTTON) && !safteyController.getRawButton(B_BUTTON)){
-    			if(!safetyPiston.set()){
-    				
-    			}
-    		}
-    				
+    		if(safteyController.getRawButton(A_BUTTON)){
+    			safetyRelay.set(Relay.Value.kForward);
+    		}else{
+    			safetyRelay.set(Relay.Value.kOff);
+    		}*/
+    		
+    			
+    			
     		Timer.delay(0.01);
     	}
     		
