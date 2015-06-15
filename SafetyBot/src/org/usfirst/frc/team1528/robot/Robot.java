@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
  */
 public class Robot extends SampleRobot {
     RobotDrive safteyDrive;
-    Joystick safteyController;
+    Joystick safteyController, safteyController1;
     Talon safteyMotor;
     DigitalInput safteySwitch;
     //DoubleSolenoid safetyPiston;
@@ -58,6 +58,7 @@ public class Robot extends SampleRobot {
     	
         safteyDrive = new RobotDrive(5,0,3,2);
         safteyController = new Joystick(0);
+        safteyController1 = new Joystick(1);
         safteySwitch = new DigitalInput(0);
         //safetyPiston = new DoubleSolenoid(0,1);
         //safetyRelay = new Relay(0);
@@ -69,6 +70,7 @@ public class Robot extends SampleRobot {
         autoPicker.addObject("Auto 1", new Integer(1));
         telePicker.addDefault("Tele 0", new Integer(0));
         telePicker.addObject("Tele 1", new Integer(1));
+        telePicker.addDefault("Tele 2", new Integer(2));
         SmartDashboard.putData("Auto Picker", autoPicker);
         SmartDashboard.putData("Tele Picker", telePicker);
         
@@ -108,20 +110,38 @@ public class Robot extends SampleRobot {
     		case 1:
     			teleOp1();
     			break;
+    		case 2:
+    			teleOp2();
+    			break;
     	}
     		
     }
-    	
-    public void teleOp0(){
+
+	public void teleOp0(){
     	while(isOperatorControl() && isEnabled()){
-        	
+        	if(safteyController.getRawButton(B_BUTTON)){
     		safteyMotor.setSafetyEnabled(true);
-    		
+    	
     		safteyDrive.setSafetyEnabled(true);
-    		double x = buffer(LEFT_X_AXIS,safteyController,true,0.18,-0.18);
-    		double y = buffer(LEFT_Y_AXIS, safteyController,true,0.18,-0.18);
+    		double x = buffer(LEFT_X_AXIS,safteyController,false,0.18,-0.18);
+    		double y = buffer(LEFT_Y_AXIS, safteyController,false,0.18,-0.18);
     		double r = buffer(RIGHT_X_AXIS, safteyController,true,0.18, -0.18);
     		safteyDrive.mecanumDrive_Cartesian(x, y, r, 0.0);
+        	
+        	}else if(!safteyController.getRawButton(B_BUTTON)){
+        		safteyMotor.setSafetyEnabled(true);
+            	
+        		safteyDrive.setSafetyEnabled(true);
+        		double x = buffer(LEFT_X_AXIS,safteyController,true,0.18,-0.18);
+        		double y = buffer(LEFT_Y_AXIS, safteyController,true,0.18,-0.18);
+        		double r = buffer(RIGHT_X_AXIS, safteyController,true,0.18, -0.18);
+        		safteyDrive.mecanumDrive_Cartesian(x, y, r, 0.0);
+        	}
+        	
+
+    			
+    		}
+    			
     		
     		/*if(safteyController.getRawButton(A_BUTTON) && safteyController.getRawButton(B_BUTTON)){
     		}else if(safteyController.getRawButton(A_BUTTON)){
@@ -142,9 +162,13 @@ public class Robot extends SampleRobot {
     		double right = buffer(RIGHT_TRIGGER_AXIS, safteyController,true,0.2, -0.2);
     		
     		if(!safteySwitch.get()){
-    			safteyMotor.set((left+right)*.4000000000);
+    			double value = (left+right)*.4000000000;
+    			safteyMotor.set(value);
+    			SmartDashboard.putNumber("Lift Output", value);
     		}else{
-    			safteyMotor.set((left+right)*1.00);
+    			double value = (left+right)*1.00;
+    			safteyMotor.set(value);
+    			SmartDashboard.putNumber("Lift Output", value);
     		}
     		
     		/*if(safteyController.getRawButton(A_BUTTON)){
@@ -157,7 +181,7 @@ public class Robot extends SampleRobot {
     			
     		Timer.delay(0.01);
     	}
-    }
+    
     
     
     
@@ -169,8 +193,54 @@ public class Robot extends SampleRobot {
     		double y = buffer(LEFT_Y_AXIS, safteyController,true,0.18,-0.18);
     		double r = buffer(RIGHT_X_AXIS, safteyController,true,0.18, -0.18);
     		safteyDrive.mecanumDrive_Cartesian(x, y, r, 0.0);
+    		
+    		double left = buffer(LEFT_TRIGGER_AXIS, safteyController1,false,0.2, -0.2);
+    		double right = buffer(RIGHT_TRIGGER_AXIS, safteyController1,true,0.2, -0.2);
+    		
+    		if(!safteySwitch.get()){
+    			double value = (left+right)*.4000000000;
+    			safteyMotor.set(value);
+    			SmartDashboard.putNumber("Lift Output", value);
+    		}else{
+    			double value = (left+right)*1.00;
+    			safteyMotor.set(value);
+    			SmartDashboard.putNumber("Lift Output", value);
+    		}
     	}
     }
+    
+    public void teleOp2(){
+    	boolean swich = true;
+    	while(isOperatorControl() && isEnabled()){
+    		
+    		if(safteyController.getRawButton(B_BUTTON)){
+    			swich = !swich;
+    		}
+    
+    	
+    		safteyDrive.setSafetyEnabled(true);
+    		double x = buffer(LEFT_X_AXIS,safteyController,swich,0.18,-0.18);
+    		double y = buffer(LEFT_Y_AXIS, safteyController,swich,0.18,-0.18);
+    		double r = buffer(RIGHT_X_AXIS, safteyController,true,0.18, -0.18);
+    		safteyDrive.mecanumDrive_Cartesian(x, y, r, 0.0);
+		
+    		double left = buffer(LEFT_TRIGGER_AXIS, safteyController1,false,0.2, -0.2);
+    		double right = buffer(RIGHT_TRIGGER_AXIS, safteyController1,true,0.2, -0.2);
+		
+    		if(!safteySwitch.get()){
+    			double value = (left+right)*.4000000000;
+    			safteyMotor.set(value);
+    			SmartDashboard.putNumber("Lift Output", value);
+    		}else{
+    			double value = (left+right)*1.00;
+    			safteyMotor.set(value);
+    			SmartDashboard.putNumber("Lift Output", value);
+    		}
+    	
+    	}
+    }
+    	
+    	
     /**
      * Runs during test mode
      */
