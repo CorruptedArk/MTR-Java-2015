@@ -32,6 +32,9 @@ public class Robot extends SampleRobot {
     SendableChooser autoPicker;
     SendableChooser telePicker;
     
+    SwitchThing switchThing;
+    Thread switchThread;
+    
   //Constants for Buttons
     static final int A_BUTTON = 1;
     static final int B_BUTTON = 2;
@@ -73,6 +76,8 @@ public class Robot extends SampleRobot {
         telePicker.addDefault("Tele 2", new Integer(2));
         SmartDashboard.putData("Auto Picker", autoPicker);
         SmartDashboard.putData("Tele Picker", telePicker);
+        
+        switchThing = new SwitchThing(safteyController,B_BUTTON,true);
         
         safteyDrive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
         safteyDrive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
@@ -210,18 +215,14 @@ public class Robot extends SampleRobot {
     }
     
     public void teleOp2(){
-    	boolean swich = true;
+    	switchThread = new Thread(switchThing);
+    	switchThread.start();
     	while(isOperatorControl() && isEnabled()){
-    		
-    		if(safteyController.getRawButton(B_BUTTON)){
-    			swich = !swich;
-    		}
-    
-    	
+    		boolean swich = switchThing.isForward();
     		safteyDrive.setSafetyEnabled(true);
-    		double x = buffer(LEFT_X_AXIS,safteyController,swich,0.18,-0.18);
-    		double y = buffer(LEFT_Y_AXIS, safteyController,swich,0.18,-0.18);
-    		double r = buffer(RIGHT_X_AXIS, safteyController,true,0.18, -0.18);
+    		double x = buffer(LEFT_X_AXIS,safteyController,swich,0.18,-0.18,0.5);
+    		double y = buffer(LEFT_Y_AXIS, safteyController,swich,0.18,-0.18,0.5);
+    		double r = buffer(RIGHT_X_AXIS, safteyController,true,0.18, -0.18,0.5);
     		safteyDrive.mecanumDrive_Cartesian(x, y, r, 0.0);
 		
     		double left = buffer(LEFT_TRIGGER_AXIS, safteyController1,false,0.2, -0.2);
@@ -238,6 +239,7 @@ public class Robot extends SampleRobot {
     		}
     	
     	}
+    	switchThing.stop();
     }
     	
     	
