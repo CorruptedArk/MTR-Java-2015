@@ -220,13 +220,13 @@ public class Robot extends SampleRobot {
     	while(isOperatorControl() && isEnabled()){
     		boolean swich = switchThing.isForward();
     		safteyDrive.setSafetyEnabled(true);
-    		double x = buffer(LEFT_X_AXIS,safteyController,swich,0.18,-0.18,0.5);
-    		double y = buffer(LEFT_Y_AXIS, safteyController,swich,0.18,-0.18,0.5);
-    		double r = buffer(RIGHT_X_AXIS, safteyController,true,0.18, -0.18,0.5);
+    		double x = buffer(LEFT_X_AXIS,safteyController,swich,0.18,-0.18,0.4);
+    		double y = buffer(LEFT_Y_AXIS, safteyController,swich,0.18,-0.18,0.4);
+    		double r = buffer(RIGHT_X_AXIS, safteyController,true,0.18, -0.18,0.6);
     		safteyDrive.mecanumDrive_Cartesian(x, y, r, 0.0);
 		
-    		double left = buffer(LEFT_TRIGGER_AXIS, safteyController1,false,0.2, -0.2);
-    		double right = buffer(RIGHT_TRIGGER_AXIS, safteyController1,true,0.2, -0.2);
+    		double left = buffer(LEFT_TRIGGER_AXIS, safteyController,false,0.2, -0.2);
+    		double right = buffer(RIGHT_TRIGGER_AXIS, safteyController,true,0.2, -0.2);
 		
     		if(!safteySwitch.get()){
     			double value = (left+right)*.4000000000;
