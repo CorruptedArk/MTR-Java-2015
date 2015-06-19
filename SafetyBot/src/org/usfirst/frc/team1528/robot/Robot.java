@@ -32,6 +32,9 @@ public class Robot extends SampleRobot {
     SendableChooser autoPicker;
     SendableChooser telePicker;
     
+    SwitchThing switchThing;
+    Thread switchThread;
+    
   //Constants for Buttons
     static final int A_BUTTON = 1;
     static final int B_BUTTON = 2;
@@ -68,16 +71,18 @@ public class Robot extends SampleRobot {
         telePicker = new SendableChooser();
         autoPicker.addDefault("Auto 0", new Integer(0));
         autoPicker.addObject("Auto 1", new Integer(1));
-        telePicker.addDefault("Tele 0", new Integer(0));
-        telePicker.addObject("Tele 1", new Integer(1));
         telePicker.addDefault("Tele 2", new Integer(2));
+        telePicker.addObject("Tele 0", new Integer(0));
+        telePicker.addObject("Tele 1", new Integer(1));
         SmartDashboard.putData("Auto Picker", autoPicker);
         SmartDashboard.putData("Tele Picker", telePicker);
+        
+        switchThing = new SwitchThing(safteyController,B_BUTTON,true);
         
         safteyDrive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
         safteyDrive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
     } 
-
+  
     
     public void autonomous() {
     	switch(((Integer)autoPicker.getSelected()).intValue()){
@@ -92,7 +97,15 @@ public class Robot extends SampleRobot {
     }
 
     public void auto0(){
-    	
+    	 myDrive.setSafetyEnabled(false);
+    	 
+    	liftMotor.set(1.0);
+        Timer.delay(0.5);
+        liftMotor.set(0.0);
+        myDrive.mecanumDrive_Cartesian(0.0,1.0,0.0,0.0);
+        Timer.delay(0.8);
+        myDrive.mecanumDrive_Cartesian(0.0,0.0,0.0,0.0);
+        
     }
     
     
@@ -210,22 +223,18 @@ public class Robot extends SampleRobot {
     }
     
     public void teleOp2(){
-    	boolean swich = true;
+    	switchThread = new Thread(switchThing);
+    	switchThread.start();
     	while(isOperatorControl() && isEnabled()){
-    		
-    		if(safteyController.getRawButton(B_BUTTON)){
-    			swich = !swich;
-    		}
-    
-    	
+    		boolean swich = switchThing.isForward();
     		safteyDrive.setSafetyEnabled(true);
-    		double x = buffer(LEFT_X_AXIS,safteyController,swich,0.18,-0.18);
-    		double y = buffer(LEFT_Y_AXIS, safteyController,swich,0.18,-0.18);
-    		double r = buffer(RIGHT_X_AXIS, safteyController,true,0.18, -0.18);
+    		double x = buffer(LEFT_X_AXIS,safteyController,swich,0.18,-0.18,0.4);
+    		double y = buffer(LEFT_Y_AXIS, safteyController,swich,0.18,-0.18,0.4);
+    		double r = buffer(RIGHT_X_AXIS, safteyController,true,0.18, -0.18,0.6);
     		safteyDrive.mecanumDrive_Cartesian(x, y, r, 0.0);
-		
-    		double left = buffer(LEFT_TRIGGER_AXIS, safteyController1,false,0.2, -0.2);
-    		double right = buffer(RIGHT_TRIGGER_AXIS, safteyController1,true,0.2, -0.2);
+    		
+    		double left = buffer(LEFT_TRIGGER_AXIS, safteyController,false,0.2, -0.2);
+    		double right = buffer(RIGHT_TRIGGER_AXIS, safteyController,true,0.2, -0.2);
 		
     		if(!safteySwitch.get()){
     			double value = (left+right)*.4000000000;
@@ -238,6 +247,7 @@ public class Robot extends SampleRobot {
     		}
     	
     	}
+    	switchThing.stop();
     }
     	
     	
