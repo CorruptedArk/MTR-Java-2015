@@ -60,6 +60,9 @@ public class Robot extends SampleRobot {
     DriveState orientationSwitcher;
     Thread orientationThread;
     
+    ScaleChanger driveScaler;
+    Thread driveScalerThread;
+    
     SendableChooser autoChooser; 
     Integer autonomousID;
     SendableChooser teleChooser;
@@ -231,18 +234,23 @@ public class Robot extends SampleRobot {
         liftThread = new Thread(lift);
         liftThread.start();
         
+        driveScaler = new ScaleChanger(moveStick,LEFT_BUMPER,RIGHT_BUMPER,scale,0.10);
+        driveScalerThread = new Thread(driveScaler);
+        driveScalerThread.start();
+        
         while (isOperatorControl() && isEnabled()) {
             myDrive.setSafetyEnabled(true);
             boolean inverted = orientationSwitcher.getOrientation();
-            double xMovement = buffer(LEFT_X_AXIS,moveStick,inverted,0.18,-0.18,scale);
-            double yMovement = buffer(LEFT_Y_AXIS,moveStick,inverted,0.18,-0.18,scale);
-            double twist = buffer(RIGHT_X_AXIS,moveStick,true,0.18,-0.18,scale);
+            double xMovement = buffer(LEFT_X_AXIS,moveStick,inverted,0.18,-0.18,driveScaler.getScale());
+            double yMovement = buffer(LEFT_Y_AXIS,moveStick,inverted,0.18,-0.18,driveScaler.getScale());
+            double twist = buffer(RIGHT_X_AXIS,moveStick,true,0.18,-0.18,driveScaler.getScale());
             myDrive.mecanumDrive_Cartesian(xMovement, yMovement, twist, 0.0);
             
             Timer.delay(0.01);
         }
         orientationSwitcher.stop();
         lift.stop();
+        driveScaler.stop();
         
     }
     
@@ -263,15 +271,19 @@ public class Robot extends SampleRobot {
         liftThread = new Thread(lift);
         liftThread.start();
         
+        driveScaler = new ScaleChanger(moveStick,LEFT_BUMPER,RIGHT_BUMPER,scale,0.10);
+        driveScalerThread = new Thread(driveScaler);
+        driveScalerThread.start();
+        
         while (isOperatorControl() && isEnabled()) {
             myDrive.setSafetyEnabled(true);
             if(control.president.getRawButton(B_BUTTON)){
                control.trap();
             }
             boolean inverted = orientationSwitcher.getOrientation();
-            double xMovement = buffer(LEFT_X_AXIS,moveStick,inverted,0.18,-0.18,scale);
-            double yMovement = buffer(LEFT_Y_AXIS,moveStick,inverted,0.18,-0.18,scale);
-            double twist = buffer(RIGHT_X_AXIS,moveStick,true,0.18,-0.18,scale);
+            double xMovement = buffer(LEFT_X_AXIS,moveStick,inverted,0.18,-0.18,driveScaler.getScale());
+            double yMovement = buffer(LEFT_Y_AXIS,moveStick,inverted,0.18,-0.18,driveScaler.getScale());
+            double twist = buffer(RIGHT_X_AXIS,moveStick,true,0.18,-0.18,driveScaler.getScale());
             myDrive.mecanumDrive_Cartesian(xMovement, yMovement, twist, 0.0);
             
             Timer.delay(0.01);
@@ -280,6 +292,7 @@ public class Robot extends SampleRobot {
         release.stop();
         orientationSwitcher.stop();
         lift.stop();
+        driveScaler.stop();
     }
     
     /**
@@ -299,6 +312,10 @@ public class Robot extends SampleRobot {
         liftThread = new Thread(lift);
         liftThread.start();
         
+        driveScaler = new ScaleChanger(control,LEFT_BUMPER,RIGHT_BUMPER,scale,0.10);
+        driveScalerThread = new Thread(driveScaler);
+        driveScalerThread.start();
+        
         while (isOperatorControl() && isEnabled()) {
             myDrive.setSafetyEnabled(true); 
             Joystick currentDriver;
@@ -312,9 +329,9 @@ public class Robot extends SampleRobot {
                 currentDriver = control.president;
             }
             boolean inverted = orientationSwitcher.getOrientation();
-            double xMovement = buffer(LEFT_X_AXIS,currentDriver,inverted,0.18,-0.18,scale);
-            double yMovement = buffer(LEFT_Y_AXIS,currentDriver,inverted,0.18,-0.18,scale);
-            double twist = buffer(RIGHT_X_AXIS,currentDriver,true,0.18,-0.18,scale);
+            double xMovement = buffer(LEFT_X_AXIS,currentDriver,inverted,0.18,-0.18,driveScaler.getScale());
+            double yMovement = buffer(LEFT_Y_AXIS,currentDriver,inverted,0.18,-0.18,driveScaler.getScale());
+            double twist = buffer(RIGHT_X_AXIS,currentDriver,true,0.18,-0.18,driveScaler.getScale());
             myDrive.mecanumDrive_Cartesian(xMovement, yMovement, twist, 0.0);
             
             Timer.delay(0.01);
@@ -323,6 +340,7 @@ public class Robot extends SampleRobot {
         release.stop();
         orientationSwitcher.stop();
         lift.stop();
+        driveScaler.stop();
     }
 
     /**
