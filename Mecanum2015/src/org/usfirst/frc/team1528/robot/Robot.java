@@ -344,52 +344,11 @@ public class Robot extends SampleRobot {
     }
 
     /**
-     * While robot is disabled, the operator will be able to edit the actions for advanced autonomous.
+     * Runs while disabled
      */
     
     @Override
-    public void disabled(){
-    	while(isDisabled()){
-    		SmartDashboard.putBoolean("Advanced Auto Is Updating", true);
-    		for(int i=0; i <= autoManager.actionList.size(); i++){
-    			
-    			
-    			try{
-    				if(SmartDashboard.getBoolean("Add Step " + i)){
-    					try{
-    						
-    						AutoAction action = new AutoAction(SmartDashboard.getNumber("X Movement " + i), 
-    								SmartDashboard.getNumber("Y Movement " + i), 
-    								SmartDashboard.getNumber("Twist " + i) , 
-    								SmartDashboard.getNumber("Wait Time " + i), 
-    								SmartDashboard.getNumber("Lift Speed " + i));
-    						if(!autoManager.actionList.get(i).equals(action)){
-    							autoManager.actionList.set(i, action);
-    						}
-    						
-    					}catch(TableKeyNotDefinedException e){
-    						
-    						SmartDashboard.putNumber("X Movement " + i, 0.0);
-    						SmartDashboard.putNumber("Y Movement " + i, 0.0);
-    						SmartDashboard.putNumber("Twist " + i, 0.0);
-    						SmartDashboard.putNumber("Wait Time " + i, 0.0);
-    						SmartDashboard.putNumber("Lift Speed" + i, 0.0);
-    						SmartDashboard.putBoolean("Open Lift" + i, false);
-    						SmartDashboard.putBoolean("Add Step" + i + 1, false);
-    						
-    						autoManager.addAutoAction(0.0, 0.0, 0.0, 0.0, 0.0);
-    				
-    					}
-    				}
-    			}catch(TableKeyNotDefinedException e){
-    				
-    			}
-    		}
-    		SmartDashboard.putBoolean("Advanced Auto Is Updating", false);
-    		Timer.delay(0.01);
-    		
-    	}
-    	SmartDashboard.putBoolean("Advanced Auto Is Updating", false);		
+    public void disabled(){	
     }
     
     /**
