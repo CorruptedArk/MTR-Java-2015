@@ -312,7 +312,7 @@ public class Robot extends SampleRobot {
         liftThread = new Thread(lift);
         liftThread.start();
         
-        driveScaler = new ScaleChanger(control,LEFT_BUMPER,RIGHT_BUMPER,scale,0.10);
+        driveScaler = new ScaleChanger(moveStick,LEFT_BUMPER,RIGHT_BUMPER,scale,0.10);
         driveScalerThread = new Thread(driveScaler);
         driveScalerThread.start();
         
